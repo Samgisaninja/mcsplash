@@ -16,9 +16,6 @@ NSTimer *delayShrinkTimer;
     	splashLabel = [[UILabel alloc] initWithFrame:CGRectMake(100, 100, 300, 20)];
     	[splashLabel setTextColor:[UIColor colorWithRed:(250.0 / 255.0) green:(250.0 / 255.0) blue:(83.0 / 255.0) alpha:1.0]];
     	[splashLabel setBackgroundColor:[UIColor clearColor]];
-        NSArray *allSplashes = [NSArray arrayWithContentsOfFile:@"/Library/Application Support/mcsplash/splashes.plist"];
-    	NSUInteger randInx = arc4random() % [allSplashes count];
-        [splashLabel setText:[allSplashes objectAtIndex:randInx]];
         [splashLabel setTransform:CGAffineTransformMakeRotation(-M_PI / 4)];
         NSData *fontData = [NSData dataWithContentsOfFile:@"/Library/Application Support/mcsplash/minecraft.ttf"];
         CFErrorRef error;
@@ -36,6 +33,9 @@ NSTimer *delayShrinkTimer;
 
         
 	}
+    NSArray *allSplashes = [NSArray arrayWithContentsOfFile:@"/Library/Application Support/mcsplash/splashes.plist"];
+    NSUInteger randInx = arc4random() % [allSplashes count];
+    [splashLabel setText:[allSplashes objectAtIndex:randInx]];
     if (!growTimer) {
         growTimer = [NSTimer scheduledTimerWithTimeInterval:0.5 target:self selector:@selector(MCSGrowLabel) userInfo:nil repeats:YES];
         delayShrinkTimer = [NSTimer scheduledTimerWithTimeInterval:0.25 target:self selector:@selector(MCSCreateShrinkTimer) userInfo:nil repeats:YES];
@@ -79,6 +79,49 @@ NSTimer *delayShrinkTimer;
 
 -(void)updateFormat{
     [self addSubview:splashLabel];
+    %orig;
+}
+
+%end
+
+%hook SBRootFolderView
+
+-(void)_coverSheetWillDismiss:(id)arg1{
+	%orig;
+    [shrinkTimer invalidate];
+    [growTimer invalidate];
+    [delayShrinkTimer invalidate];
+}
+
+-(void)_coverSheetWillPresent:(id)arg1{
+	if (!splashLabel) {
+    	splashLabel = [[UILabel alloc] initWithFrame:CGRectMake(100, 100, 300, 20)];
+    	[splashLabel setTextColor:[UIColor colorWithRed:(250.0 / 255.0) green:(250.0 / 255.0) blue:(83.0 / 255.0) alpha:1.0]];
+    	[splashLabel setBackgroundColor:[UIColor clearColor]];
+        [splashLabel setTransform:CGAffineTransformMakeRotation(-M_PI / 4)];
+        NSData *fontData = [NSData dataWithContentsOfFile:@"/Library/Application Support/mcsplash/minecraft.ttf"];
+        CFErrorRef error;
+        CGDataProviderRef provider = CGDataProviderCreateWithCFData((CFDataRef)fontData);
+        CGFontRef font = CGFontCreateWithDataProvider(provider);
+        if (! CTFontManagerRegisterGraphicsFont(font, &error)) {
+            CFStringRef errorDescription = CFErrorCopyDescription(error);
+            NSLog(@"Failed to load font: %@", errorDescription);
+            CFRelease(errorDescription);
+        }
+        CFRelease(font);
+        CFRelease(provider);
+        [splashLabel setFont:[UIFont fontWithName:@"minecraft" size:11]];
+        [splashLabel sizeToFit];
+
+        
+	}
+    NSArray *allSplashes = [NSArray arrayWithContentsOfFile:@"/Library/Application Support/mcsplash/splashes.plist"];
+    NSUInteger randInx = arc4random() % [allSplashes count];
+    [splashLabel setText:[allSplashes objectAtIndex:randInx]];
+    if (!growTimer) {
+        growTimer = [NSTimer scheduledTimerWithTimeInterval:0.5 target:self selector:@selector(MCSGrowLabel) userInfo:nil repeats:YES];
+        delayShrinkTimer = [NSTimer scheduledTimerWithTimeInterval:0.25 target:self selector:@selector(MCSCreateShrinkTimer) userInfo:nil repeats:YES];
+    }
     %orig;
 }
 
