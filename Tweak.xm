@@ -18,14 +18,9 @@ NSTimer *delayShrinkTimer;
     	[splashLabel setBackgroundColor:[UIColor clearColor]];
         [splashLabel setTransform:CGAffineTransformMakeRotation(-M_PI / 4)];
         NSData *fontData = [NSData dataWithContentsOfFile:@"/Library/Application Support/mcsplash/minecraft.ttf"];
-        CFErrorRef error;
         CGDataProviderRef provider = CGDataProviderCreateWithCFData((CFDataRef)fontData);
         CGFontRef font = CGFontCreateWithDataProvider(provider);
-        if (! CTFontManagerRegisterGraphicsFont(font, &error)) {
-            CFStringRef errorDescription = CFErrorCopyDescription(error);
-            NSLog(@"Failed to load font: %@", errorDescription);
-            CFRelease(errorDescription);
-        }
+        CTFontManagerRegisterGraphicsFont(font, nil);
         CFRelease(font);
         CFRelease(provider);
         [splashLabel setFont:[UIFont fontWithName:@"minecraft" size:11]];
@@ -72,6 +67,7 @@ NSTimer *delayShrinkTimer;
         
     }];
 }
+
 %end
 
 %hook SBFLockScreenDateView
@@ -86,13 +82,6 @@ NSTimer *delayShrinkTimer;
 
 %hook SBRootFolderView
 
--(void)_coverSheetWillDismiss:(id)arg1{
-	%orig;
-    [shrinkTimer invalidate];
-    [growTimer invalidate];
-    [delayShrinkTimer invalidate];
-}
-
 -(void)_coverSheetWillPresent:(id)arg1{
 	if (!splashLabel) {
     	splashLabel = [[UILabel alloc] initWithFrame:CGRectMake(100, 100, 300, 20)];
@@ -100,14 +89,9 @@ NSTimer *delayShrinkTimer;
     	[splashLabel setBackgroundColor:[UIColor clearColor]];
         [splashLabel setTransform:CGAffineTransformMakeRotation(-M_PI / 4)];
         NSData *fontData = [NSData dataWithContentsOfFile:@"/Library/Application Support/mcsplash/minecraft.ttf"];
-        CFErrorRef error;
         CGDataProviderRef provider = CGDataProviderCreateWithCFData((CFDataRef)fontData);
         CGFontRef font = CGFontCreateWithDataProvider(provider);
-        if (! CTFontManagerRegisterGraphicsFont(font, &error)) {
-            CFStringRef errorDescription = CFErrorCopyDescription(error);
-            NSLog(@"Failed to load font: %@", errorDescription);
-            CFRelease(errorDescription);
-        }
+        CTFontManagerRegisterGraphicsFont(font, nil);
         CFRelease(font);
         CFRelease(provider);
         [splashLabel setFont:[UIFont fontWithName:@"minecraft" size:11]];
@@ -121,6 +105,19 @@ NSTimer *delayShrinkTimer;
     if (!growTimer) {
         growTimer = [NSTimer scheduledTimerWithTimeInterval:0.5 target:self selector:@selector(MCSGrowLabel) userInfo:nil repeats:YES];
         delayShrinkTimer = [NSTimer scheduledTimerWithTimeInterval:0.25 target:self selector:@selector(MCSCreateShrinkTimer) userInfo:nil repeats:YES];
+    }
+    %orig;
+}
+
+%end
+
+%hook SparkAlwaysOnController
+
+- (void)setScreenIsOn:(_Bool)arg1 withForceShow:(_Bool)arg2{
+    if (arg1){
+        [splashLabel setHidden:FALSE];
+    } else {
+        [splashLabel setHidden:TRUE];
     }
     %orig;
 }
