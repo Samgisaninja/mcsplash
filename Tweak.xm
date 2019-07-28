@@ -3,6 +3,7 @@ UILabel *splashLabel;
 NSTimer *shrinkTimer;
 NSTimer *growTimer;
 NSTimer *delayShrinkTimer;
+NSDictionary *prefs;
 @interface SBRootFolderView: UIView
 @end
 
@@ -126,6 +127,7 @@ NSTimer *delayShrinkTimer;
         NSUInteger randInx = arc4random() % [allSplashes count];
         [splashLabel setText:[allSplashes objectAtIndex:randInx]];
         [splashLabel setHidden:FALSE];
+        NSLog(@"NSLogify: %@", prefs);
     } else {
         [splashLabel setHidden:TRUE];
     }
@@ -133,3 +135,14 @@ NSTimer *delayShrinkTimer;
 }
 
 %end
+
+
+%ctor{
+    prefs = [[NSUserDefaults standardUserDefaults] persistentDomainForName:@"com.samgisaninja.mcsplashprefs"];
+    if (!prefs) {
+        NSMutableDictionary *mutablePrefs = [[NSMutableDictionary alloc] init];
+        [mutablePrefs setObject:@TRUE forKey:@"isEnabled"];
+        [mutablePrefs setObject:@TRUE forKey:@"isEnabled"];
+    }
+    %init;
+}
