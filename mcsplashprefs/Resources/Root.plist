@@ -73,8 +73,36 @@
 		<dict>
 			<key>cell</key>
 			<string>PSGroupCell</string>
+			<key>footerText</key>
+			<string>Please do not use other tweaks to hide the date/time as they may interefere with Bedrock.</string>
+			<key>isStaticText</key>
+			<true/>
+		</dict>
+		<dict>
+			<key>cell</key>
+			<string>PSGroupCell</string>
 			<key>label</key>
-			<string>Respring to apply changes</string>
+			<string>Compatibility</string>
+		</dict>
+		<dict>
+			<key>cell</key>
+			<string>PSSwitchCell</string>
+			<key>default</key>
+			<false/>
+			<key>defaults</key>
+			<string>com.samgisaninja.mcsplashprefs</string>
+			<key>key</key>
+			<string>hypHide</string>
+			<key>label</key>
+			<string>Hide on Hyperion (SparkDev) Always On Display</string>
+		</dict>
+		<dict>
+			<key>cell</key>
+			<string>PSGroupCell</string>
+			<key>footerText</key>
+			<string>Recommended when using animations</string>
+			<key>isStaticText</key>
+			<true/>
 		</dict>
 		<dict>
 			<key>cell</key>
@@ -83,6 +111,12 @@
 			<string>Respring (sbreload, if compatible)</string>
 			<key>action</key>
 			<string>respringDevice</string>
+		</dict>
+		<dict>
+			<key>cell</key>
+			<string>PSGroupCell</string>
+			<key>label</key>
+			<string>You may need to respring to fully apply changes</string>
 		</dict>
 		<dict>
 			<key>cell</key>

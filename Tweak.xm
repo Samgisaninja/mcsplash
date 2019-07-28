@@ -142,7 +142,7 @@ NSDictionary *prefs;
     if (!prefs) {
         NSMutableDictionary *mutablePrefs = [[NSMutableDictionary alloc] init];
         [mutablePrefs setObject:@TRUE forKey:@"isEnabled"];
-        [mutablePrefs setObject:@TRUE forKey:@"isEnabled"];
+        [mutablePrefs setObject:@TRUE forKey:@"enableAnimations"];
     }
     %init;
 }
