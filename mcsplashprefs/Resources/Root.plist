@@ -32,19 +32,21 @@
 			<key>cell</key>
 			<string>PSSwitchCell</string>
 			<key>default</key>
-			<true/>
+			<false/>
 			<key>defaults</key>
 			<string>com.samgisaninja.mcsplashprefs</string>
 			<key>key</key>
 			<string>enableAnimations</string>
 			<key>label</key>
-			<string>Animate</string>
+			<string>Enable Animations</string>
 		</dict>
 		<dict>
 			<key>cell</key>
 			<string>PSGroupCell</string>
 			<key>label</key>
 			<string>Hide time view elements</string>
+			<key>footerText</key>
+			<string>Please do not use other tweaks to hide the date/time as they may interefere with Bedrock.</string>
 		</dict>
 		<dict>
 			<key>cell</key>
@@ -73,14 +75,6 @@
 		<dict>
 			<key>cell</key>
 			<string>PSGroupCell</string>
-			<key>footerText</key>
-			<string>Please do not use other tweaks to hide the date/time as they may interefere with Bedrock.</string>
-			<key>isStaticText</key>
-			<true/>
-		</dict>
-		<dict>
-			<key>cell</key>
-			<string>PSGroupCell</string>
 			<key>label</key>
 			<string>Compatibility</string>
 		</dict>
@@ -92,15 +86,15 @@
 			<key>defaults</key>
 			<string>com.samgisaninja.mcsplashprefs</string>
 			<key>key</key>
-			<string>hypHide</string>
+			<string>hypShow</string>
 			<key>label</key>
-			<string>Hide on Hyperion (SparkDev) Always On Display</string>
+			<string>Show on Hyperion (SparkDev) Always On Display</string>
 		</dict>
 		<dict>
 			<key>cell</key>
 			<string>PSGroupCell</string>
 			<key>footerText</key>
-			<string>Recommended when using animations</string>
+			<string>You may need to respring to fully apply changes</string>
 			<key>isStaticText</key>
 			<true/>
 		</dict>
@@ -108,15 +102,9 @@
 			<key>cell</key>
 			<string>PSButtonCell</string>
 			<key>label</key>
-			<string>Respring (sbreload, if compatible)</string>
+			<string>Respring (sbreload, if available)</string>
 			<key>action</key>
 			<string>respringDevice</string>
-		</dict>
-		<dict>
-			<key>cell</key>
-			<string>PSGroupCell</string>
-			<key>label</key>
-			<string>You may need to respring to fully apply changes</string>
 		</dict>
 		<dict>
 			<key>cell</key>
@@ -128,7 +116,7 @@
 			<key>cell</key>
 			<string>PSButtonCell</string>
 			<key>label</key>
-			<string>Donate \<\3</string>
+			<string>Donate &lt;3</string>
 			<key>action</key>
 			<string>giveMeMoney</string>
 		</dict>
@@ -158,6 +146,6 @@
 		</dict>
 	</array>
 	<key>title</key>
-	<string>Bedrock Settings</string>
+	<string>mcsplashprefs</string>
 </dict>
 </plist>

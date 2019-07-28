@@ -143,6 +143,12 @@ NSDictionary *prefs;
         NSMutableDictionary *mutablePrefs = [[NSMutableDictionary alloc] init];
         [mutablePrefs setObject:@TRUE forKey:@"isEnabled"];
         [mutablePrefs setObject:@TRUE forKey:@"enableAnimations"];
+        [mutablePrefs setObject:@FALSE forKey:@"hideTime"];
+        [mutablePrefs setObject:@FALSE forKey:@"hideDate"];
+        [mutablePrefs setObject:@FALSE forKey:@"hypShow"];
+        prefs = [NSDictionary dictionaryWithDictionary:mutablePrefs];
     }
-    %init;
+    if ([[prefs objectForKey:@"isEnabled"] boolValue]) {
+        %init;
+    }
 }
