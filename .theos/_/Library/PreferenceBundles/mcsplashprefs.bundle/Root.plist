@@ -26,7 +26,7 @@
 			<key>cell</key>
 			<string>PSGroupCell</string>
 			<key>label</key>
-			<string>Enable/Disable pulsing animation</string>
+			<string>Appearance</string>
 		</dict>
 		<dict>
 			<key>cell</key>
@@ -39,6 +39,26 @@
 			<string>enableAnimations</string>
 			<key>label</key>
 			<string>Enable Animations</string>
+		</dict>
+		<dict>
+			<key>cell</key>
+			<string>PSSegmentCell</string>
+			<key>default</key>
+			<integer>1</integer>
+			<key>defaults</key>
+			<string>com.samgisaninja.mcsplashprefs</string>
+			<key>key</key>
+			<string>splashSide</string>
+			<key>validValues</key>
+			<array>
+				<integer>0</integer>
+				<integer>1</integer>
+			</array>
+			<key>validTitles</key>
+			<array>
+				<string>Left</string>
+				<string>Right</string>
+			</array>
 		</dict>
 		<dict>
 			<key>cell</key>
@@ -70,7 +90,7 @@
 			<key>key</key>
 			<string>hideDate</string>
 			<key>label</key>
-			<string>Hide date/charging percentage view</string>
+			<string>Hide date view</string>
 		</dict>
 		<dict>
 			<key>cell</key>

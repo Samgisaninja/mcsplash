@@ -38,7 +38,7 @@
 		[respringTask launch];
 	} else {
 		[respringTask setLaunchPath:@"/usr/bin/killall"];
-		NSArray *respringArgs = [NSArray arrayWithObjects:@"backboardd", nil];
+		NSArray *respringArgs = [NSArray arrayWithObjects:@"-9", @"SpringBoard", nil];
 		[respringTask setArguments:respringArgs];
 		[respringTask launch];
 	}

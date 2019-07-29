@@ -4,6 +4,8 @@ UILabel *splashLabel;
 NSTimer *shrinkTimer;
 NSTimer *growTimer;
 NSTimer *delayShrinkTimer;
+NSMutableDictionary *localPrefs;
+BOOL updatedPreferencesForcibly;
 
 @interface SBRootFolderView: UIView
 @end
@@ -41,7 +43,12 @@ NSTimer *delayShrinkTimer;
     NSArray *allSplashes = [NSArray arrayWithContentsOfFile:@"/Library/Application Support/mcsplash/splashes.plist"];
     NSUInteger randInx = arc4random() % [allSplashes count];
     [splashLabel setText:[allSplashes objectAtIndex:randInx]];
-    NSDictionary *prefs = [[NSUserDefaults standardUserDefaults] persistentDomainForName:@"com.samgisaninja.mcsplashprefs"];
+    NSDictionary *prefs;
+    if (updatedPreferencesForcibly) {
+        prefs = [NSDictionary dictionaryWithDictionary:localPrefs];
+    } else {
+        prefs = [[NSUserDefaults standardUserDefaults] persistentDomainForName:@"com.samgisaninja.mcsplashprefs"];
+    }
     if ([[prefs objectForKey:@"enableAnimations"] boolValue]) {
         if (!growTimer) {
             growTimer = [NSTimer scheduledTimerWithTimeInterval:0.5 target:self selector:@selector(MCSGrowLabel) userInfo:nil repeats:TRUE];
@@ -59,7 +66,12 @@ NSTimer *delayShrinkTimer;
 
 %new
 -(void)MCSCreateShrinkTimer{
-    NSDictionary *prefs = [[NSUserDefaults standardUserDefaults] persistentDomainForName:@"com.samgisaninja.mcsplashprefs"];
+    NSDictionary *prefs;
+    if (updatedPreferencesForcibly) {
+        prefs = [NSDictionary dictionaryWithDictionary:localPrefs];
+    } else {
+        prefs = [[NSUserDefaults standardUserDefaults] persistentDomainForName:@"com.samgisaninja.mcsplashprefs"];
+    }
     if (!shrinkTimer) {
         if ([[prefs objectForKey:@"enableAnimations"] boolValue]) {
             shrinkTimer = [NSTimer scheduledTimerWithTimeInterval:0.5 target:self selector:@selector(MCSShrinkLabel) userInfo:nil repeats:TRUE];
@@ -73,15 +85,19 @@ NSTimer *delayShrinkTimer;
 
 %new
 -(void)MCSGrowLabel{
-    NSDictionary *prefs = [[NSUserDefaults standardUserDefaults] persistentDomainForName:@"com.samgisaninja.mcsplashprefs"];
-    if ([[prefs objectForKey:@"enableAnimations"] boolValue]) {
-        [UIView animateWithDuration:0.25 animations:^{
-            [splashLabel setTransform:CGAffineTransformScale([splashLabel transform], 1.25, 1.25)];
-            [splashLabel setCenter:[splashLabel center]];
-        } completion:^(BOOL finished) {
-            [splashLabel sizeToFit];
-        }];
+    NSDictionary *prefs;
+    if (updatedPreferencesForcibly) {
+        prefs = [NSDictionary dictionaryWithDictionary:localPrefs];
     } else {
+        prefs = [[NSUserDefaults standardUserDefaults] persistentDomainForName:@"com.samgisaninja.mcsplashprefs"];
+    }
+    [UIView animateWithDuration:0.25 animations:^{
+        [splashLabel setTransform:CGAffineTransformScale([splashLabel transform], 1.25, 1.25)];
+        [splashLabel setCenter:[splashLabel center]];
+    } completion:^(BOOL finished) {
+        [splashLabel sizeToFit];
+    }];
+    if (![[prefs objectForKey:@"enableAnimations"] boolValue]) {
         [growTimer invalidate];
         [shrinkTimer invalidate];
     }
@@ -89,15 +105,19 @@ NSTimer *delayShrinkTimer;
 
 %new
 -(void)MCSShrinkLabel{
-    NSDictionary *prefs = [[NSUserDefaults standardUserDefaults] persistentDomainForName:@"com.samgisaninja.mcsplashprefs"];
-    if ([[prefs objectForKey:@"enableAnimations"] boolValue]) {
-        [UIView animateWithDuration:0.25 animations:^{
-            [splashLabel setTransform:CGAffineTransformScale([splashLabel transform], 0.8, 0.8)];
-            [splashLabel setCenter:[splashLabel center]];
-        } completion:^(BOOL finished) {
-            [splashLabel sizeToFit];
-        }];
+    NSDictionary *prefs;
+    if (updatedPreferencesForcibly) {
+        prefs = [NSDictionary dictionaryWithDictionary:localPrefs];
     } else {
+        prefs = [[NSUserDefaults standardUserDefaults] persistentDomainForName:@"com.samgisaninja.mcsplashprefs"];
+    }
+        [UIView animateWithDuration:0.25 animations:^{
+        [splashLabel setTransform:CGAffineTransformScale([splashLabel transform], 0.8, 0.8)];
+        [splashLabel setCenter:[splashLabel center]];
+    } completion:^(BOOL finished) {
+        [splashLabel sizeToFit];
+    }];
+    if (![[prefs objectForKey:@"enableAnimations"] boolValue]) {
         [growTimer invalidate];
         [shrinkTimer invalidate];
     }
@@ -110,7 +130,12 @@ NSTimer *delayShrinkTimer;
 
 -(void)updateFormat{
     [self addSubview:splashLabel];
-    NSDictionary *prefs = [[NSUserDefaults standardUserDefaults] persistentDomainForName:@"com.samgisaninja.mcsplashprefs"];
+    NSDictionary *prefs;
+    if (updatedPreferencesForcibly) {
+        prefs = [NSDictionary dictionaryWithDictionary:localPrefs];
+    } else {
+        prefs = [[NSUserDefaults standardUserDefaults] persistentDomainForName:@"com.samgisaninja.mcsplashprefs"];
+    }
     if ([[prefs objectForKey:@"hideDate"] boolValue]) {
         SBFLockScreenDateSubtitleDateView *dateView = MSHookIvar<SBFLockScreenDateSubtitleDateView *>(self, "_dateSubtitleView");
         [dateView setHidden:TRUE];
@@ -178,7 +203,12 @@ NSTimer *delayShrinkTimer;
         [splashLabel setText:[allSplashes objectAtIndex:randInx]];
         [splashLabel setHidden:FALSE];
     } else {
-        NSDictionary *prefs = [[NSUserDefaults standardUserDefaults] persistentDomainForName:@"com.samgisaninja.mcsplashprefs"];
+        NSDictionary *prefs;
+    if (updatedPreferencesForcibly) {
+        prefs = [NSDictionary dictionaryWithDictionary:localPrefs];
+    } else {
+        prefs = [[NSUserDefaults standardUserDefaults] persistentDomainForName:@"com.samgisaninja.mcsplashprefs"];
+    }
         if (![[prefs objectForKey:@"hypShow"] boolValue]) {
             [splashLabel setHidden:TRUE];
         }
@@ -190,17 +220,46 @@ NSTimer *delayShrinkTimer;
 
 
 %ctor{
-    NSDictionary *prefs = [[NSUserDefaults standardUserDefaults] persistentDomainForName:@"com.samgisaninja.mcsplashprefs"];
-    if (!prefs) {
-        NSMutableDictionary *mutablePrefs = [[NSMutableDictionary alloc] init];
-        [mutablePrefs setObject:@TRUE forKey:@"isEnabled"];
-        [mutablePrefs setObject:@TRUE forKey:@"enableAnimations"];
-        [mutablePrefs setObject:@FALSE forKey:@"hideTime"];
-        [mutablePrefs setObject:@FALSE forKey:@"hideDate"];
-        [mutablePrefs setObject:@FALSE forKey:@"hypShow"];
-        prefs = [NSDictionary dictionaryWithDictionary:mutablePrefs];
+    localPrefs = [NSMutableDictionary dictionaryWithDictionary:[[NSUserDefaults standardUserDefaults] persistentDomainForName:@"com.samgisaninja.mcsplashprefs"]];
+    BOOL updatedPreferencesForcibly = FALSE;
+    NSLog(@"NSLOGIFY: %@", localPrefs);
+    if (![localPrefs objectForKey:@"isEnabled"]){
+        NSLog(@"NSLOGIFY: created object isEnabled");
+        [localPrefs setObject:@TRUE forKey:@"isEnabled"];
+        [[NSFileManager defaultManager] removeItemAtPath:@"/var/mobile/Library/Preferences/com.samgisaninja.mcsplashprefs.plist" error:nil];
+        [localPrefs writeToFile:@"/var/mobile/Library/Preferences/com.samgisaninja.mcsplashprefs.plist" atomically:TRUE];
+        updatedPreferencesForcibly = TRUE;
     }
-    if ([[prefs objectForKey:@"isEnabled"] boolValue]) {
+    if (![localPrefs objectForKey:@"enableAnimations"]){
+        NSLog(@"NSLOGIFY: created object enableAnimations");
+        [localPrefs setObject:@TRUE forKey:@"enableAnimations"];
+        [[NSFileManager defaultManager] removeItemAtPath:@"/var/mobile/Library/Preferences/com.samgisaninja.mcsplashprefs.plist" error:nil];
+        [localPrefs writeToFile:@"/var/mobile/Library/Preferences/com.samgisaninja.mcsplashprefs.plist" atomically:TRUE];
+        updatedPreferencesForcibly = FALSE;
+    }
+    if (![localPrefs objectForKey:@"hideTime"]){
+        NSLog(@"NSLOGIFY: created object hideTime");
+        [localPrefs setObject:@FALSE forKey:@"hideTime"];
+        [[NSFileManager defaultManager] removeItemAtPath:@"/var/mobile/Library/Preferences/com.samgisaninja.mcsplashprefs.plist" error:nil];
+        [localPrefs writeToFile:@"/var/mobile/Library/Preferences/com.samgisaninja.mcsplashprefs.plist" atomically:TRUE];
+        updatedPreferencesForcibly = FALSE;
+    }
+    if (![localPrefs objectForKey:@"hideDate"]){
+        NSLog(@"NSLOGIFY: created object hideDate");
+        [localPrefs setObject:@FALSE forKey:@"hideDate"];
+        [[NSFileManager defaultManager] removeItemAtPath:@"/var/mobile/Library/Preferences/com.samgisaninja.mcsplashprefs.plist" error:nil];
+        [localPrefs writeToFile:@"/var/mobile/Library/Preferences/com.samgisaninja.mcsplashprefs.plist" atomically:TRUE];
+        updatedPreferencesForcibly = FALSE;
+    }
+    if (![localPrefs objectForKey:@"hypShow"]){
+        NSLog(@"NSLOGIFY: created object hypShow");
+        [localPrefs setObject:@FALSE forKey:@"hypShow"];
+        [[NSFileManager defaultManager] removeItemAtPath:@"/var/mobile/Library/Preferences/com.samgisaninja.mcsplashprefs.plist" error:nil];
+        [localPrefs writeToFile:@"/var/mobile/Library/Preferences/com.samgisaninja.mcsplashprefs.plist" atomically:TRUE];
+        updatedPreferencesForcibly = FALSE;
+    }
+    if ([[localPrefs objectForKey:@"isEnabled"] boolValue]) {
+        NSLog(@"NSLOGIFY: initializing...");
         %init;
-    }
+    } 
 }
