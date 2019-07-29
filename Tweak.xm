@@ -32,17 +32,29 @@ NSDictionary *prefs;
     NSArray *allSplashes = [NSArray arrayWithContentsOfFile:@"/Library/Application Support/mcsplash/splashes.plist"];
     NSUInteger randInx = arc4random() % [allSplashes count];
     [splashLabel setText:[allSplashes objectAtIndex:randInx]];
-    if (!growTimer) {
-        growTimer = [NSTimer scheduledTimerWithTimeInterval:0.5 target:self selector:@selector(MCSGrowLabel) userInfo:nil repeats:YES];
-        delayShrinkTimer = [NSTimer scheduledTimerWithTimeInterval:0.25 target:self selector:@selector(MCSCreateShrinkTimer) userInfo:nil repeats:YES];
+    if ([[prefs objectForKey:@"enableAnimations"] boolValue]) {
+        if (!growTimer) {
+            growTimer = [NSTimer scheduledTimerWithTimeInterval:0.5 target:self selector:@selector(MCSGrowLabel) userInfo:nil repeats:TRUE];
+            delayShrinkTimer = [NSTimer scheduledTimerWithTimeInterval:0.25 target:self selector:@selector(MCSCreateShrinkTimer) userInfo:nil repeats:TRUE];
+        }
+    } else {
+        if (!growTimer) {
+            growTimer = [NSTimer scheduledTimerWithTimeInterval:0.5 target:self selector:@selector(MCSGrowLabel) userInfo:nil repeats:FALSE];
+            delayShrinkTimer = [NSTimer scheduledTimerWithTimeInterval:0.25 target:self selector:@selector(MCSCreateShrinkTimer) userInfo:nil repeats:FALSE];
+        }
     }
+    
     %orig;
 }
 
 %new
 -(void)MCSCreateShrinkTimer{
     if (!shrinkTimer) {
-        shrinkTimer = [NSTimer scheduledTimerWithTimeInterval:0.5 target:self selector:@selector(MCSShrinkLabel) userInfo:nil repeats:YES];
+        if ([[prefs objectForKey:@"enableAnimations"] boolValue]) {
+            shrinkTimer = [NSTimer scheduledTimerWithTimeInterval:0.5 target:self selector:@selector(MCSShrinkLabel) userInfo:nil repeats:TRUE];
+        } else {
+            shrinkTimer = [NSTimer scheduledTimerWithTimeInterval:0.5 target:self selector:@selector(MCSShrinkLabel) userInfo:nil repeats:FALSE];
+        }
     }
     [delayShrinkTimer invalidate];
     delayShrinkTimer = nil;
@@ -127,9 +139,10 @@ NSDictionary *prefs;
         NSUInteger randInx = arc4random() % [allSplashes count];
         [splashLabel setText:[allSplashes objectAtIndex:randInx]];
         [splashLabel setHidden:FALSE];
-        NSLog(@"NSLogify: %@", prefs);
     } else {
-        [splashLabel setHidden:TRUE];
+        if (![[prefs objectForKey:@"hypShow"] boolValue]) {
+            [splashLabel setHidden:TRUE];
+        }
     }
     %orig;
 }

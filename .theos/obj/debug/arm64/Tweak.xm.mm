@@ -32,7 +32,7 @@ NSDictionary *prefs;
 #define _LOGOS_RETURN_RETAINED
 #endif
 
-@class SBRootFolderView; @class SBFLockScreenDateView; @class SparkAlwaysOnController; @class SpringBoard; 
+@class SpringBoard; @class SBRootFolderView; @class SparkAlwaysOnController; @class SBFLockScreenDateView; 
 static void (*_logos_orig$_ungrouped$SpringBoard$applicationDidFinishLaunching$)(_LOGOS_SELF_TYPE_NORMAL SpringBoard* _LOGOS_SELF_CONST, SEL, id); static void _logos_method$_ungrouped$SpringBoard$applicationDidFinishLaunching$(_LOGOS_SELF_TYPE_NORMAL SpringBoard* _LOGOS_SELF_CONST, SEL, id); static void _logos_method$_ungrouped$SpringBoard$MCSCreateShrinkTimer(_LOGOS_SELF_TYPE_NORMAL SpringBoard* _LOGOS_SELF_CONST, SEL); static void _logos_method$_ungrouped$SpringBoard$MCSGrowLabel(_LOGOS_SELF_TYPE_NORMAL SpringBoard* _LOGOS_SELF_CONST, SEL); static void _logos_method$_ungrouped$SpringBoard$MCSShrinkLabel(_LOGOS_SELF_TYPE_NORMAL SpringBoard* _LOGOS_SELF_CONST, SEL); static void (*_logos_orig$_ungrouped$SBFLockScreenDateView$updateFormat)(_LOGOS_SELF_TYPE_NORMAL SBFLockScreenDateView* _LOGOS_SELF_CONST, SEL); static void _logos_method$_ungrouped$SBFLockScreenDateView$updateFormat(_LOGOS_SELF_TYPE_NORMAL SBFLockScreenDateView* _LOGOS_SELF_CONST, SEL); static void (*_logos_orig$_ungrouped$SBRootFolderView$_coverSheetWillPresent$)(_LOGOS_SELF_TYPE_NORMAL SBRootFolderView* _LOGOS_SELF_CONST, SEL, id); static void _logos_method$_ungrouped$SBRootFolderView$_coverSheetWillPresent$(_LOGOS_SELF_TYPE_NORMAL SBRootFolderView* _LOGOS_SELF_CONST, SEL, id); static void (*_logos_orig$_ungrouped$SparkAlwaysOnController$setScreenIsOn$withForceShow$)(_LOGOS_SELF_TYPE_NORMAL SparkAlwaysOnController* _LOGOS_SELF_CONST, SEL, _Bool, _Bool); static void _logos_method$_ungrouped$SparkAlwaysOnController$setScreenIsOn$withForceShow$(_LOGOS_SELF_TYPE_NORMAL SparkAlwaysOnController* _LOGOS_SELF_CONST, SEL, _Bool, _Bool); 
 
 #line 13 "Tweak.xm"
@@ -58,17 +58,30 @@ static void _logos_method$_ungrouped$SpringBoard$applicationDidFinishLaunching$(
     NSArray *allSplashes = [NSArray arrayWithContentsOfFile:@"/Library/Application Support/mcsplash/splashes.plist"];
     NSUInteger randInx = arc4random() % [allSplashes count];
     [splashLabel setText:[allSplashes objectAtIndex:randInx]];
-    if (!growTimer) {
-        growTimer = [NSTimer scheduledTimerWithTimeInterval:0.5 target:self selector:@selector(MCSGrowLabel) userInfo:nil repeats:YES];
-        delayShrinkTimer = [NSTimer scheduledTimerWithTimeInterval:0.25 target:self selector:@selector(MCSCreateShrinkTimer) userInfo:nil repeats:YES];
+    NSLog(@"NSLOGIFY: objForKey is %d", [[prefs objectForKey:@"enableAnimations"] boolValue]);
+    if ([[prefs objectForKey:@"enableAnimations"] boolValue]) {
+        if (!growTimer) {
+            growTimer = [NSTimer scheduledTimerWithTimeInterval:0.5 target:self selector:@selector(MCSGrowLabel) userInfo:nil repeats:TRUE];
+            delayShrinkTimer = [NSTimer scheduledTimerWithTimeInterval:0.25 target:self selector:@selector(MCSCreateShrinkTimer) userInfo:nil repeats:TRUE];
+        }
+    } else {
+        if (!growTimer) {
+            growTimer = [NSTimer scheduledTimerWithTimeInterval:0.5 target:self selector:@selector(MCSGrowLabel) userInfo:nil repeats:FALSE];
+            delayShrinkTimer = [NSTimer scheduledTimerWithTimeInterval:0.25 target:self selector:@selector(MCSCreateShrinkTimer) userInfo:nil repeats:FALSE];
+        }
     }
+    
     _logos_orig$_ungrouped$SpringBoard$applicationDidFinishLaunching$(self, _cmd, arg1);
 }
 
 
 static void _logos_method$_ungrouped$SpringBoard$MCSCreateShrinkTimer(_LOGOS_SELF_TYPE_NORMAL SpringBoard* _LOGOS_SELF_CONST __unused self, SEL __unused _cmd){
     if (!shrinkTimer) {
-        shrinkTimer = [NSTimer scheduledTimerWithTimeInterval:0.5 target:self selector:@selector(MCSShrinkLabel) userInfo:nil repeats:YES];
+        if ([[prefs objectForKey:@"enableAnimations"] boolValue]) {
+            shrinkTimer = [NSTimer scheduledTimerWithTimeInterval:0.5 target:self selector:@selector(MCSShrinkLabel) userInfo:nil repeats:TRUE];
+        } else {
+            shrinkTimer = [NSTimer scheduledTimerWithTimeInterval:0.5 target:self selector:@selector(MCSShrinkLabel) userInfo:nil repeats:FALSE];
+        }
     }
     [delayShrinkTimer invalidate];
     delayShrinkTimer = nil;
@@ -153,9 +166,10 @@ static void _logos_method$_ungrouped$SparkAlwaysOnController$setScreenIsOn$withF
         NSUInteger randInx = arc4random() % [allSplashes count];
         [splashLabel setText:[allSplashes objectAtIndex:randInx]];
         [splashLabel setHidden:FALSE];
-        NSLog(@"NSLogify: %@", prefs);
     } else {
-        [splashLabel setHidden:TRUE];
+        if (![[prefs objectForKey:@"hypShow"] boolValue]) {
+            [splashLabel setHidden:TRUE];
+        }
     }
     _logos_orig$_ungrouped$SparkAlwaysOnController$setScreenIsOn$withForceShow$(self, _cmd, arg1, arg2);
 }
@@ -163,7 +177,7 @@ static void _logos_method$_ungrouped$SparkAlwaysOnController$setScreenIsOn$withF
 
 
 
-static __attribute__((constructor)) void _logosLocalCtor_369bbb28(int __unused argc, char __unused **argv, char __unused **envp){
+static __attribute__((constructor)) void _logosLocalCtor_bac47c6b(int __unused argc, char __unused **argv, char __unused **envp){
     prefs = [[NSUserDefaults standardUserDefaults] persistentDomainForName:@"com.samgisaninja.mcsplashprefs"];
     if (!prefs) {
         NSMutableDictionary *mutablePrefs = [[NSMutableDictionary alloc] init];

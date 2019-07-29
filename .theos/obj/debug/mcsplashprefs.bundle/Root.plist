@@ -32,7 +32,7 @@
 			<key>cell</key>
 			<string>PSSwitchCell</string>
 			<key>default</key>
-			<false/>
+			<true/>
 			<key>defaults</key>
 			<string>com.samgisaninja.mcsplashprefs</string>
 			<key>key</key>
