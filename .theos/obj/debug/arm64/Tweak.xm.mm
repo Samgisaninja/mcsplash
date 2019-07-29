@@ -1,14 +1,23 @@
 #line 1 "Tweak.xm"
 #include "CoreText/CTFontManager.h"
+
 UILabel *splashLabel;
 NSTimer *shrinkTimer;
 NSTimer *growTimer;
 NSTimer *delayShrinkTimer;
-NSDictionary *prefs;
+
 @interface SBRootFolderView: UIView
 @end
 
 @interface SBFLockScreenDateView : UIView
+@end
+
+@interface SBFLockScreenDateSubtitleDateView : UIView
+@property (nonatomic, assign, readwrite) BOOL hidden;
+@end
+
+@interface SBUILegibilityLabel : UIView
+@property (nonatomic, assign, readwrite) BOOL hidden;
 @end
 
 
@@ -32,18 +41,27 @@ NSDictionary *prefs;
 #define _LOGOS_RETURN_RETAINED
 #endif
 
-@class SpringBoard; @class SBRootFolderView; @class SparkAlwaysOnController; @class SBFLockScreenDateView; 
+@class SpringBoard; @class SparkAlwaysOnController; @class SBFLockScreenDateView; @class SBRootFolderView; 
 static void (*_logos_orig$_ungrouped$SpringBoard$applicationDidFinishLaunching$)(_LOGOS_SELF_TYPE_NORMAL SpringBoard* _LOGOS_SELF_CONST, SEL, id); static void _logos_method$_ungrouped$SpringBoard$applicationDidFinishLaunching$(_LOGOS_SELF_TYPE_NORMAL SpringBoard* _LOGOS_SELF_CONST, SEL, id); static void _logos_method$_ungrouped$SpringBoard$MCSCreateShrinkTimer(_LOGOS_SELF_TYPE_NORMAL SpringBoard* _LOGOS_SELF_CONST, SEL); static void _logos_method$_ungrouped$SpringBoard$MCSGrowLabel(_LOGOS_SELF_TYPE_NORMAL SpringBoard* _LOGOS_SELF_CONST, SEL); static void _logos_method$_ungrouped$SpringBoard$MCSShrinkLabel(_LOGOS_SELF_TYPE_NORMAL SpringBoard* _LOGOS_SELF_CONST, SEL); static void (*_logos_orig$_ungrouped$SBFLockScreenDateView$updateFormat)(_LOGOS_SELF_TYPE_NORMAL SBFLockScreenDateView* _LOGOS_SELF_CONST, SEL); static void _logos_method$_ungrouped$SBFLockScreenDateView$updateFormat(_LOGOS_SELF_TYPE_NORMAL SBFLockScreenDateView* _LOGOS_SELF_CONST, SEL); static void (*_logos_orig$_ungrouped$SBRootFolderView$_coverSheetWillPresent$)(_LOGOS_SELF_TYPE_NORMAL SBRootFolderView* _LOGOS_SELF_CONST, SEL, id); static void _logos_method$_ungrouped$SBRootFolderView$_coverSheetWillPresent$(_LOGOS_SELF_TYPE_NORMAL SBRootFolderView* _LOGOS_SELF_CONST, SEL, id); static void (*_logos_orig$_ungrouped$SparkAlwaysOnController$setScreenIsOn$withForceShow$)(_LOGOS_SELF_TYPE_NORMAL SparkAlwaysOnController* _LOGOS_SELF_CONST, SEL, _Bool, _Bool); static void _logos_method$_ungrouped$SparkAlwaysOnController$setScreenIsOn$withForceShow$(_LOGOS_SELF_TYPE_NORMAL SparkAlwaysOnController* _LOGOS_SELF_CONST, SEL, _Bool, _Bool); 
 
-#line 13 "Tweak.xm"
+#line 22 "Tweak.xm"
 
 
 static void _logos_method$_ungrouped$SpringBoard$applicationDidFinishLaunching$(_LOGOS_SELF_TYPE_NORMAL SpringBoard* _LOGOS_SELF_CONST __unused self, SEL __unused _cmd, id arg1){
+    
 	if (!splashLabel) {
-    	splashLabel = [[UILabel alloc] initWithFrame:CGRectMake(100, 100, 300, 20)];
+        NSDictionary *prefs = [[NSUserDefaults standardUserDefaults] persistentDomainForName:@"com.samgisaninja.mcsplashprefs"];
+        if ([[prefs objectForKey:@"splashSide"] isEqual:@(0)]) {
+            splashLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 100, 300, 20)];
+            [splashLabel setTransform:CGAffineTransformMakeRotation(7 * -M_PI / 4)];
+        } else {
+            splashLabel = [[UILabel alloc] initWithFrame:CGRectMake(100, 100, 300, 20)];
+            [splashLabel setTransform:CGAffineTransformMakeRotation(-M_PI / 4)];            
+        }
+    	
     	[splashLabel setTextColor:[UIColor colorWithRed:(250.0 / 255.0) green:(250.0 / 255.0) blue:(83.0 / 255.0) alpha:1.0]];
     	[splashLabel setBackgroundColor:[UIColor clearColor]];
-        [splashLabel setTransform:CGAffineTransformMakeRotation(-M_PI / 4)];
+        
         NSData *fontData = [NSData dataWithContentsOfFile:@"/Library/Application Support/mcsplash/minecraft.ttf"];
         CGDataProviderRef provider = CGDataProviderCreateWithCFData((CFDataRef)fontData);
         CGFontRef font = CGFontCreateWithDataProvider(provider);
@@ -58,7 +76,7 @@ static void _logos_method$_ungrouped$SpringBoard$applicationDidFinishLaunching$(
     NSArray *allSplashes = [NSArray arrayWithContentsOfFile:@"/Library/Application Support/mcsplash/splashes.plist"];
     NSUInteger randInx = arc4random() % [allSplashes count];
     [splashLabel setText:[allSplashes objectAtIndex:randInx]];
-    NSLog(@"NSLOGIFY: objForKey is %d", [[prefs objectForKey:@"enableAnimations"] boolValue]);
+    NSDictionary *prefs = [[NSUserDefaults standardUserDefaults] persistentDomainForName:@"com.samgisaninja.mcsplashprefs"];
     if ([[prefs objectForKey:@"enableAnimations"] boolValue]) {
         if (!growTimer) {
             growTimer = [NSTimer scheduledTimerWithTimeInterval:0.5 target:self selector:@selector(MCSGrowLabel) userInfo:nil repeats:TRUE];
@@ -76,6 +94,7 @@ static void _logos_method$_ungrouped$SpringBoard$applicationDidFinishLaunching$(
 
 
 static void _logos_method$_ungrouped$SpringBoard$MCSCreateShrinkTimer(_LOGOS_SELF_TYPE_NORMAL SpringBoard* _LOGOS_SELF_CONST __unused self, SEL __unused _cmd){
+    NSDictionary *prefs = [[NSUserDefaults standardUserDefaults] persistentDomainForName:@"com.samgisaninja.mcsplashprefs"];
     if (!shrinkTimer) {
         if ([[prefs objectForKey:@"enableAnimations"] boolValue]) {
             shrinkTimer = [NSTimer scheduledTimerWithTimeInterval:0.5 target:self selector:@selector(MCSShrinkLabel) userInfo:nil repeats:TRUE];
@@ -114,6 +133,21 @@ static void _logos_method$_ungrouped$SpringBoard$MCSShrinkLabel(_LOGOS_SELF_TYPE
 
 static void _logos_method$_ungrouped$SBFLockScreenDateView$updateFormat(_LOGOS_SELF_TYPE_NORMAL SBFLockScreenDateView* _LOGOS_SELF_CONST __unused self, SEL __unused _cmd){
     [self addSubview:splashLabel];
+    NSDictionary *prefs = [[NSUserDefaults standardUserDefaults] persistentDomainForName:@"com.samgisaninja.mcsplashprefs"];
+    if ([[prefs objectForKey:@"hideDate"] boolValue]) {
+        SBFLockScreenDateSubtitleDateView *dateView = MSHookIvar<SBFLockScreenDateSubtitleDateView *>(self, "_dateSubtitleView");
+        [dateView setHidden:TRUE];
+    } else {
+        SBFLockScreenDateSubtitleDateView *dateView = MSHookIvar<SBFLockScreenDateSubtitleDateView *>(self, "_dateSubtitleView");
+        [dateView setHidden:FALSE];
+    }
+    if ([[prefs objectForKey:@"hideTime"] boolValue]) {
+        SBUILegibilityLabel *timeView = MSHookIvar<SBUILegibilityLabel *>(self, "_timeLabel");
+        [timeView setHidden:TRUE];
+    } else {
+        SBUILegibilityLabel *timeView = MSHookIvar<SBUILegibilityLabel *>(self, "_timeLabel");
+        [timeView setHidden:FALSE];
+    }
     _logos_orig$_ungrouped$SBFLockScreenDateView$updateFormat(self, _cmd);
 }
 
@@ -167,6 +201,7 @@ static void _logos_method$_ungrouped$SparkAlwaysOnController$setScreenIsOn$withF
         [splashLabel setText:[allSplashes objectAtIndex:randInx]];
         [splashLabel setHidden:FALSE];
     } else {
+        NSDictionary *prefs = [[NSUserDefaults standardUserDefaults] persistentDomainForName:@"com.samgisaninja.mcsplashprefs"];
         if (![[prefs objectForKey:@"hypShow"] boolValue]) {
             [splashLabel setHidden:TRUE];
         }
@@ -177,8 +212,8 @@ static void _logos_method$_ungrouped$SparkAlwaysOnController$setScreenIsOn$withF
 
 
 
-static __attribute__((constructor)) void _logosLocalCtor_bac47c6b(int __unused argc, char __unused **argv, char __unused **envp){
-    prefs = [[NSUserDefaults standardUserDefaults] persistentDomainForName:@"com.samgisaninja.mcsplashprefs"];
+static __attribute__((constructor)) void _logosLocalCtor_8308fe04(int __unused argc, char __unused **argv, char __unused **envp){
+    NSDictionary *prefs = [[NSUserDefaults standardUserDefaults] persistentDomainForName:@"com.samgisaninja.mcsplashprefs"];
     if (!prefs) {
         NSMutableDictionary *mutablePrefs = [[NSMutableDictionary alloc] init];
         [mutablePrefs setObject:@TRUE forKey:@"isEnabled"];
@@ -186,6 +221,7 @@ static __attribute__((constructor)) void _logosLocalCtor_bac47c6b(int __unused a
         [mutablePrefs setObject:@FALSE forKey:@"hideTime"];
         [mutablePrefs setObject:@FALSE forKey:@"hideDate"];
         [mutablePrefs setObject:@FALSE forKey:@"hypShow"];
+        [mutablePrefs setObject:@(1) forKey:@"splashSide"];
         prefs = [NSDictionary dictionaryWithDictionary:mutablePrefs];
     }
     if ([[prefs objectForKey:@"isEnabled"] boolValue]) {

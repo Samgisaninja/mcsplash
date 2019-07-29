@@ -22,11 +22,20 @@ NSTimer *delayShrinkTimer;
 %hook SpringBoard
 
 -(void)applicationDidFinishLaunching:(id)arg1{
+    
 	if (!splashLabel) {
-    	splashLabel = [[UILabel alloc] initWithFrame:CGRectMake(100, 100, 300, 20)];
+        NSDictionary *prefs = [[NSUserDefaults standardUserDefaults] persistentDomainForName:@"com.samgisaninja.mcsplashprefs"];
+        if ([[prefs objectForKey:@"splashSide"] isEqual:@(0)]) {
+            splashLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 100, 300, 20)];
+            [splashLabel setTransform:CGAffineTransformMakeRotation(7 * -M_PI / 4)];
+        } else {
+            splashLabel = [[UILabel alloc] initWithFrame:CGRectMake(100, 100, 300, 20)];
+            [splashLabel setTransform:CGAffineTransformMakeRotation(-M_PI / 4)];            
+        }
+    	
     	[splashLabel setTextColor:[UIColor colorWithRed:(250.0 / 255.0) green:(250.0 / 255.0) blue:(83.0 / 255.0) alpha:1.0]];
     	[splashLabel setBackgroundColor:[UIColor clearColor]];
-        [splashLabel setTransform:CGAffineTransformMakeRotation(-M_PI / 4)];
+        
         NSData *fontData = [NSData dataWithContentsOfFile:@"/Library/Application Support/mcsplash/minecraft.ttf"];
         CGDataProviderRef provider = CGDataProviderCreateWithCFData((CFDataRef)fontData);
         CGFontRef font = CGFontCreateWithDataProvider(provider);
@@ -73,34 +82,22 @@ NSTimer *delayShrinkTimer;
 
 %new
 -(void)MCSGrowLabel{
-    NSDictionary *prefs = [[NSUserDefaults standardUserDefaults] persistentDomainForName:@"com.samgisaninja.mcsplashprefs"];
-    if ([[prefs objectForKey:@"enableAnimations"] boolValue]) {
-        [UIView animateWithDuration:0.25 animations:^{
-            [splashLabel setTransform:CGAffineTransformScale([splashLabel transform], 1.25, 1.25)];
-            [splashLabel setCenter:[splashLabel center]];
-        } completion:^(BOOL finished) {
-            [splashLabel sizeToFit];
-        }];
-    } else {
-        [growTimer invalidate];
-        [shrinkTimer invalidate];
-    }
+    [UIView animateWithDuration:0.25 animations:^{
+        [splashLabel setTransform:CGAffineTransformScale([splashLabel transform], 1.25, 1.25)];
+        [splashLabel setCenter:[splashLabel center]];
+    } completion:^(BOOL finished) {
+        [splashLabel sizeToFit];
+    }];
 }
 
 %new
 -(void)MCSShrinkLabel{
-    NSDictionary *prefs = [[NSUserDefaults standardUserDefaults] persistentDomainForName:@"com.samgisaninja.mcsplashprefs"];
-    if ([[prefs objectForKey:@"enableAnimations"] boolValue]) {
-        [UIView animateWithDuration:0.25 animations:^{
-            [splashLabel setTransform:CGAffineTransformScale([splashLabel transform], 0.8, 0.8)];
-            [splashLabel setCenter:[splashLabel center]];
-        } completion:^(BOOL finished) {
-            [splashLabel sizeToFit];
-        }];
-    } else {
-        [growTimer invalidate];
-        [shrinkTimer invalidate];
-    }
+    [UIView animateWithDuration:0.25 animations:^{
+        [splashLabel setTransform:CGAffineTransformScale([splashLabel transform], 0.8, 0.8)];
+        [splashLabel setCenter:[splashLabel center]];
+    } completion:^(BOOL finished) {
+        [splashLabel sizeToFit];
+    }];
 }
 
 %end
@@ -198,6 +195,7 @@ NSTimer *delayShrinkTimer;
         [mutablePrefs setObject:@FALSE forKey:@"hideTime"];
         [mutablePrefs setObject:@FALSE forKey:@"hideDate"];
         [mutablePrefs setObject:@FALSE forKey:@"hypShow"];
+        [mutablePrefs setObject:@(1) forKey:@"splashSide"];
         prefs = [NSDictionary dictionaryWithDictionary:mutablePrefs];
     }
     if ([[prefs objectForKey:@"isEnabled"] boolValue]) {
