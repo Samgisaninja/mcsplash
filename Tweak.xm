@@ -4,8 +4,11 @@ UILabel *splashLabel;
 NSTimer *shrinkTimer;
 NSTimer *growTimer;
 NSTimer *delayShrinkTimer;
-NSMutableDictionary *localPrefs;
-BOOL updatedPreferencesForcibly;
+
+@interface SpringBoard
+-(float)MCSxOffset;
+-(float)MCSyOffset;
+@end
 
 @interface SBRootFolderView: UIView
 @end
@@ -27,11 +30,10 @@ BOOL updatedPreferencesForcibly;
     
 	if (!splashLabel) {
         NSDictionary *prefs = [[NSUserDefaults standardUserDefaults] persistentDomainForName:@"com.samgisaninja.mcsplashprefs"];
+        splashLabel = [[UILabel alloc] initWithFrame:CGRectMake([self MCSxOffset], [self MCSyOffset], 300, 20)];
         if ([[prefs objectForKey:@"splashSide"] isEqual:@(0)]) {
-            splashLabel = [[UILabel alloc] initWithFrame:CGRectMake(-100, 100, 300, 20)];
             [splashLabel setTransform:CGAffineTransformMakeRotation(7 * -M_PI / 4)];
         } else {
-            splashLabel = [[UILabel alloc] initWithFrame:CGRectMake(100, 100, 300, 20)];
             [splashLabel setTransform:CGAffineTransformMakeRotation(-M_PI / 4)];            
         }
     	
@@ -52,12 +54,7 @@ BOOL updatedPreferencesForcibly;
     NSArray *allSplashes = [NSArray arrayWithContentsOfFile:@"/Library/Application Support/mcsplash/splashes.plist"];
     NSUInteger randInx = arc4random() % [allSplashes count];
     [splashLabel setText:[allSplashes objectAtIndex:randInx]];
-    NSDictionary *prefs;
-    if (updatedPreferencesForcibly) {
-        prefs = [NSDictionary dictionaryWithDictionary:localPrefs];
-    } else {
-        prefs = [[NSUserDefaults standardUserDefaults] persistentDomainForName:@"com.samgisaninja.mcsplashprefs"];
-    }
+    NSDictionary *prefs = [[NSUserDefaults standardUserDefaults] persistentDomainForName:@"com.samgisaninja.mcsplashprefs"];
     if ([[prefs objectForKey:@"enableAnimations"] boolValue]) {
         if (!growTimer) {
             growTimer = [NSTimer scheduledTimerWithTimeInterval:0.5 target:self selector:@selector(MCSGrowLabel) userInfo:nil repeats:TRUE];
@@ -75,12 +72,7 @@ BOOL updatedPreferencesForcibly;
 
 %new
 -(void)MCSCreateShrinkTimer{
-    NSDictionary *prefs;
-    if (updatedPreferencesForcibly) {
-        prefs = [NSDictionary dictionaryWithDictionary:localPrefs];
-    } else {
-        prefs = [[NSUserDefaults standardUserDefaults] persistentDomainForName:@"com.samgisaninja.mcsplashprefs"];
-    }
+    NSDictionary *prefs = [[NSUserDefaults standardUserDefaults] persistentDomainForName:@"com.samgisaninja.mcsplashprefs"];
     if (!shrinkTimer) {
         if ([[prefs objectForKey:@"enableAnimations"] boolValue]) {
             shrinkTimer = [NSTimer scheduledTimerWithTimeInterval:0.5 target:self selector:@selector(MCSShrinkLabel) userInfo:nil repeats:TRUE];
@@ -112,6 +104,36 @@ BOOL updatedPreferencesForcibly;
     }];
 }
 
+%new 
+-(float)MCSxOffset{
+    NSDictionary *prefs;
+    prefs = [[NSUserDefaults standardUserDefaults] persistentDomainForName:@"com.samgisaninja.mcsplashprefs"];
+    if ([prefs objectForKey:@"xOff"]){
+        if ([[prefs objectForKey:@"splashSide"] isEqual:@(0)]) {
+            return [[prefs objectForKey:@"xOff"] floatValue] - 100;
+        } else {
+            return [[prefs objectForKey:@"xOff"] floatValue] + 100;
+        }
+    } else {
+        if ([[prefs objectForKey:@"splashSide"] isEqual:@(0)]) {
+            return -100;
+        } else {
+            return 100;
+        }
+    }
+}
+
+%new 
+-(float)MCSyOffset{
+    NSDictionary *prefs;
+    prefs = [[NSUserDefaults standardUserDefaults] persistentDomainForName:@"com.samgisaninja.mcsplashprefs"];
+    if ([prefs objectForKey:@"yOff"]){
+        return [[prefs objectForKey:@"yOff"] floatValue]+ 100;
+    } else {
+        return 100;
+    }
+}
+
 %end
 
 %hook SBFLockScreenDateView
@@ -119,12 +141,7 @@ BOOL updatedPreferencesForcibly;
 
 -(void)updateFormat{
     [self addSubview:splashLabel];
-    NSDictionary *prefs;
-    if (updatedPreferencesForcibly) {
-        prefs = [NSDictionary dictionaryWithDictionary:localPrefs];
-    } else {
-        prefs = [[NSUserDefaults standardUserDefaults] persistentDomainForName:@"com.samgisaninja.mcsplashprefs"];
-    }
+    NSDictionary *prefs = [[NSUserDefaults standardUserDefaults] persistentDomainForName:@"com.samgisaninja.mcsplashprefs"];
     if ([[prefs objectForKey:@"hideDate"] boolValue]) {
         SBFLockScreenDateSubtitleDateView *dateView = MSHookIvar<SBFLockScreenDateSubtitleDateView *>(self, "_dateSubtitleView");
         [dateView setHidden:TRUE];
@@ -192,12 +209,7 @@ BOOL updatedPreferencesForcibly;
         [splashLabel setText:[allSplashes objectAtIndex:randInx]];
         [splashLabel setHidden:FALSE];
     } else {
-        NSDictionary *prefs;
-    if (updatedPreferencesForcibly) {
-        prefs = [NSDictionary dictionaryWithDictionary:localPrefs];
-    } else {
-        prefs = [[NSUserDefaults standardUserDefaults] persistentDomainForName:@"com.samgisaninja.mcsplashprefs"];
-    }
+        NSDictionary *prefs = [[NSUserDefaults standardUserDefaults] persistentDomainForName:@"com.samgisaninja.mcsplashprefs"];
         if (![[prefs objectForKey:@"hypShow"] boolValue]) {
             [splashLabel setHidden:TRUE];
         }
