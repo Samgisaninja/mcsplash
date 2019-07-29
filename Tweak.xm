@@ -1,13 +1,22 @@
 #include "CoreText/CTFontManager.h"
+
 UILabel *splashLabel;
 NSTimer *shrinkTimer;
 NSTimer *growTimer;
 NSTimer *delayShrinkTimer;
-NSDictionary *prefs;
+
 @interface SBRootFolderView: UIView
 @end
 
 @interface SBFLockScreenDateView : UIView
+@end
+
+@interface SBFLockScreenDateSubtitleDateView : UIView
+@property (nonatomic, assign, readwrite) BOOL hidden;
+@end
+
+@interface SBUILegibilityLabel : UIView
+@property (nonatomic, assign, readwrite) BOOL hidden;
 @end
 
 %hook SpringBoard
@@ -32,6 +41,7 @@ NSDictionary *prefs;
     NSArray *allSplashes = [NSArray arrayWithContentsOfFile:@"/Library/Application Support/mcsplash/splashes.plist"];
     NSUInteger randInx = arc4random() % [allSplashes count];
     [splashLabel setText:[allSplashes objectAtIndex:randInx]];
+    NSDictionary *prefs = [[NSUserDefaults standardUserDefaults] persistentDomainForName:@"com.samgisaninja.mcsplashprefs"];
     if ([[prefs objectForKey:@"enableAnimations"] boolValue]) {
         if (!growTimer) {
             growTimer = [NSTimer scheduledTimerWithTimeInterval:0.5 target:self selector:@selector(MCSGrowLabel) userInfo:nil repeats:TRUE];
@@ -49,6 +59,7 @@ NSDictionary *prefs;
 
 %new
 -(void)MCSCreateShrinkTimer{
+    NSDictionary *prefs = [[NSUserDefaults standardUserDefaults] persistentDomainForName:@"com.samgisaninja.mcsplashprefs"];
     if (!shrinkTimer) {
         if ([[prefs objectForKey:@"enableAnimations"] boolValue]) {
             shrinkTimer = [NSTimer scheduledTimerWithTimeInterval:0.5 target:self selector:@selector(MCSShrinkLabel) userInfo:nil repeats:TRUE];
@@ -62,22 +73,34 @@ NSDictionary *prefs;
 
 %new
 -(void)MCSGrowLabel{
-    [UIView animateWithDuration:0.25 animations:^{
-        [splashLabel setTransform:CGAffineTransformScale([splashLabel transform], 1.25, 1.25)];
-        [splashLabel setCenter:[splashLabel center]];
-    } completion:^(BOOL finished) {
-        [splashLabel sizeToFit];
-    }];
+    NSDictionary *prefs = [[NSUserDefaults standardUserDefaults] persistentDomainForName:@"com.samgisaninja.mcsplashprefs"];
+    if ([[prefs objectForKey:@"enableAnimations"] boolValue]) {
+        [UIView animateWithDuration:0.25 animations:^{
+            [splashLabel setTransform:CGAffineTransformScale([splashLabel transform], 1.25, 1.25)];
+            [splashLabel setCenter:[splashLabel center]];
+        } completion:^(BOOL finished) {
+            [splashLabel sizeToFit];
+        }];
+    } else {
+        [growTimer invalidate];
+        [shrinkTimer invalidate];
+    }
 }
 
 %new
 -(void)MCSShrinkLabel{
-    [UIView animateWithDuration:0.25 animations:^{
-        [splashLabel setTransform:CGAffineTransformScale([splashLabel transform], 0.8, 0.8)];
-        [splashLabel setCenter:[splashLabel center]];
-    } completion:^(BOOL finished) {
-        [splashLabel sizeToFit];
-    }];
+    NSDictionary *prefs = [[NSUserDefaults standardUserDefaults] persistentDomainForName:@"com.samgisaninja.mcsplashprefs"];
+    if ([[prefs objectForKey:@"enableAnimations"] boolValue]) {
+        [UIView animateWithDuration:0.25 animations:^{
+            [splashLabel setTransform:CGAffineTransformScale([splashLabel transform], 0.8, 0.8)];
+            [splashLabel setCenter:[splashLabel center]];
+        } completion:^(BOOL finished) {
+            [splashLabel sizeToFit];
+        }];
+    } else {
+        [growTimer invalidate];
+        [shrinkTimer invalidate];
+    }
 }
 
 %end
@@ -87,6 +110,21 @@ NSDictionary *prefs;
 
 -(void)updateFormat{
     [self addSubview:splashLabel];
+    NSDictionary *prefs = [[NSUserDefaults standardUserDefaults] persistentDomainForName:@"com.samgisaninja.mcsplashprefs"];
+    if ([[prefs objectForKey:@"hideDate"] boolValue]) {
+        SBFLockScreenDateSubtitleDateView *dateView = MSHookIvar<SBFLockScreenDateSubtitleDateView *>(self, "_dateSubtitleView");
+        [dateView setHidden:TRUE];
+    } else {
+        SBFLockScreenDateSubtitleDateView *dateView = MSHookIvar<SBFLockScreenDateSubtitleDateView *>(self, "_dateSubtitleView");
+        [dateView setHidden:FALSE];
+    }
+    if ([[prefs objectForKey:@"hideTime"] boolValue]) {
+        SBUILegibilityLabel *timeView = MSHookIvar<SBUILegibilityLabel *>(self, "_timeLabel");
+        [timeView setHidden:TRUE];
+    } else {
+        SBUILegibilityLabel *timeView = MSHookIvar<SBUILegibilityLabel *>(self, "_timeLabel");
+        [timeView setHidden:FALSE];
+    }
     %orig;
 }
 
@@ -140,6 +178,7 @@ NSDictionary *prefs;
         [splashLabel setText:[allSplashes objectAtIndex:randInx]];
         [splashLabel setHidden:FALSE];
     } else {
+        NSDictionary *prefs = [[NSUserDefaults standardUserDefaults] persistentDomainForName:@"com.samgisaninja.mcsplashprefs"];
         if (![[prefs objectForKey:@"hypShow"] boolValue]) {
             [splashLabel setHidden:TRUE];
         }
@@ -151,7 +190,7 @@ NSDictionary *prefs;
 
 
 %ctor{
-    prefs = [[NSUserDefaults standardUserDefaults] persistentDomainForName:@"com.samgisaninja.mcsplashprefs"];
+    NSDictionary *prefs = [[NSUserDefaults standardUserDefaults] persistentDomainForName:@"com.samgisaninja.mcsplashprefs"];
     if (!prefs) {
         NSMutableDictionary *mutablePrefs = [[NSMutableDictionary alloc] init];
         [mutablePrefs setObject:@TRUE forKey:@"isEnabled"];
