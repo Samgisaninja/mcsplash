@@ -24,11 +24,20 @@ BOOL updatedPreferencesForcibly;
 %hook SpringBoard
 
 -(void)applicationDidFinishLaunching:(id)arg1{
+    
 	if (!splashLabel) {
-    	splashLabel = [[UILabel alloc] initWithFrame:CGRectMake(100, 100, 300, 20)];
+        NSDictionary *prefs = [[NSUserDefaults standardUserDefaults] persistentDomainForName:@"com.samgisaninja.mcsplashprefs"];
+        if ([[prefs objectForKey:@"splashSide"] isEqual:@(0)]) {
+            splashLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 100, 300, 20)];
+            [splashLabel setTransform:CGAffineTransformMakeRotation(7 * -M_PI / 4)];
+        } else {
+            splashLabel = [[UILabel alloc] initWithFrame:CGRectMake(100, 100, 300, 20)];
+            [splashLabel setTransform:CGAffineTransformMakeRotation(-M_PI / 4)];            
+        }
+    	
     	[splashLabel setTextColor:[UIColor colorWithRed:(250.0 / 255.0) green:(250.0 / 255.0) blue:(83.0 / 255.0) alpha:1.0]];
     	[splashLabel setBackgroundColor:[UIColor clearColor]];
-        [splashLabel setTransform:CGAffineTransformMakeRotation(-M_PI / 4)];
+        
         NSData *fontData = [NSData dataWithContentsOfFile:@"/Library/Application Support/mcsplash/minecraft.ttf"];
         CGDataProviderRef provider = CGDataProviderCreateWithCFData((CFDataRef)fontData);
         CGFontRef font = CGFontCreateWithDataProvider(provider);
@@ -85,42 +94,22 @@ BOOL updatedPreferencesForcibly;
 
 %new
 -(void)MCSGrowLabel{
-    NSDictionary *prefs;
-    if (updatedPreferencesForcibly) {
-        prefs = [NSDictionary dictionaryWithDictionary:localPrefs];
-    } else {
-        prefs = [[NSUserDefaults standardUserDefaults] persistentDomainForName:@"com.samgisaninja.mcsplashprefs"];
-    }
     [UIView animateWithDuration:0.25 animations:^{
         [splashLabel setTransform:CGAffineTransformScale([splashLabel transform], 1.25, 1.25)];
         [splashLabel setCenter:[splashLabel center]];
     } completion:^(BOOL finished) {
         [splashLabel sizeToFit];
     }];
-    if (![[prefs objectForKey:@"enableAnimations"] boolValue]) {
-        [growTimer invalidate];
-        [shrinkTimer invalidate];
-    }
 }
 
 %new
 -(void)MCSShrinkLabel{
-    NSDictionary *prefs;
-    if (updatedPreferencesForcibly) {
-        prefs = [NSDictionary dictionaryWithDictionary:localPrefs];
-    } else {
-        prefs = [[NSUserDefaults standardUserDefaults] persistentDomainForName:@"com.samgisaninja.mcsplashprefs"];
-    }
-        [UIView animateWithDuration:0.25 animations:^{
+    [UIView animateWithDuration:0.25 animations:^{
         [splashLabel setTransform:CGAffineTransformScale([splashLabel transform], 0.8, 0.8)];
         [splashLabel setCenter:[splashLabel center]];
     } completion:^(BOOL finished) {
         [splashLabel sizeToFit];
     }];
-    if (![[prefs objectForKey:@"enableAnimations"] boolValue]) {
-        [growTimer invalidate];
-        [shrinkTimer invalidate];
-    }
 }
 
 %end
@@ -220,29 +209,19 @@ BOOL updatedPreferencesForcibly;
 
 
 %ctor{
-    localPrefs = [NSMutableDictionary dictionaryWithDictionary:[[NSUserDefaults standardUserDefaults] persistentDomainForName:@"com.samgisaninja.mcsplashprefs"]];
-    BOOL updatedPreferencesForcibly = FALSE;
-    NSLog(@"NSLOGIFY: %@", localPrefs);
-    if (![localPrefs objectForKey:@"isEnabled"]){
-        NSLog(@"NSLOGIFY: created object isEnabled");
-        [localPrefs setObject:@TRUE forKey:@"isEnabled"];
-        [[NSFileManager defaultManager] removeItemAtPath:@"/var/mobile/Library/Preferences/com.samgisaninja.mcsplashprefs.plist" error:nil];
-        [localPrefs writeToFile:@"/var/mobile/Library/Preferences/com.samgisaninja.mcsplashprefs.plist" atomically:TRUE];
-        updatedPreferencesForcibly = TRUE;
+    NSDictionary *prefs = [[NSUserDefaults standardUserDefaults] persistentDomainForName:@"com.samgisaninja.mcsplashprefs"];
+    if (!prefs) {
+        NSMutableDictionary *mutablePrefs = [[NSMutableDictionary alloc] init];
+        [mutablePrefs setObject:@TRUE forKey:@"isEnabled"];
+        [mutablePrefs setObject:@TRUE forKey:@"enableAnimations"];
+        [mutablePrefs setObject:@FALSE forKey:@"hideTime"];
+        [mutablePrefs setObject:@FALSE forKey:@"hideDate"];
+        [mutablePrefs setObject:@FALSE forKey:@"hypShow"];
+        [mutablePrefs setObject:@(1) forKey:@"splashSide"];
+        prefs = [NSDictionary dictionaryWithDictionary:mutablePrefs];
     }
-    if (![localPrefs objectForKey:@"enableAnimations"]){
-        NSLog(@"NSLOGIFY: created object enableAnimations");
-        [localPrefs setObject:@TRUE forKey:@"enableAnimations"];
-        [[NSFileManager defaultManager] removeItemAtPath:@"/var/mobile/Library/Preferences/com.samgisaninja.mcsplashprefs.plist" error:nil];
-        [localPrefs writeToFile:@"/var/mobile/Library/Preferences/com.samgisaninja.mcsplashprefs.plist" atomically:TRUE];
-        updatedPreferencesForcibly = FALSE;
-    }
-    if (![localPrefs objectForKey:@"hideTime"]){
-        NSLog(@"NSLOGIFY: created object hideTime");
-        [localPrefs setObject:@FALSE forKey:@"hideTime"];
-        [[NSFileManager defaultManager] removeItemAtPath:@"/var/mobile/Library/Preferences/com.samgisaninja.mcsplashprefs.plist" error:nil];
-        [localPrefs writeToFile:@"/var/mobile/Library/Preferences/com.samgisaninja.mcsplashprefs.plist" atomically:TRUE];
-        updatedPreferencesForcibly = FALSE;
+    if ([[prefs objectForKey:@"isEnabled"] boolValue]) {
+        %init;
     }
     if (![localPrefs objectForKey:@"hideDate"]){
         NSLog(@"NSLOGIFY: created object hideDate");
