@@ -1,5 +1,5 @@
 #include "MCSRootListController.h"
-#import "NSTask.h"
+#import <spawn.h>
 
 @implementation MCSRootListController
 
@@ -32,15 +32,14 @@
 }
 
 -(void)respringDevice{
-	NSTask *respringTask = [[NSTask alloc] init];
-	if ([[NSFileManager defaultManager] fileExistsAtPath:@"/usr/bin/sbreload"]){
-		[respringTask setLaunchPath:@"/usr/bin/sbreload"];
-		[respringTask launch];
+	if (@available(iOS 11, *)){
+		pid_t pid;
+    	const char* args[] = {"sbreload", NULL};
+    	posix_spawn(&pid, "/usr/bin/sbreload", NULL, NULL, (char* const*)args, NULL);
 	} else {
-		[respringTask setLaunchPath:@"/usr/bin/killall"];
-		NSArray *respringArgs = [NSArray arrayWithObjects:@"-9", @"SpringBoard", nil];
-		[respringTask setArguments:respringArgs];
-		[respringTask launch];
+		pid_t pid;
+    	const char* args[] = {"killall", "backboardd", NULL};
+    	posix_spawn(&pid, "/usr/bin/killall", NULL, NULL, (char* const*)args, NULL);
 	}
 }
 
