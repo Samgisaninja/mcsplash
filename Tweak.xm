@@ -181,32 +181,6 @@ NSTimer *delayShrinkTimer;
 %hook SBRootFolderView
 
 -(void)_coverSheetWillPresent:(id)arg1{
-    NSDictionary *prefs = [[NSUserDefaults standardUserDefaults] persistentDomainForName:@"com.samgisaninja.mcsplashprefs"];
-	if (!splashLabel) {
-    	splashLabel = [[UILabel alloc] initWithFrame:CGRectMake(100, 100, 300, 20)];
-    	[splashLabel setTextColor:[UIColor colorWithRed:(250.0 / 255.0) green:(250.0 / 255.0) blue:(83.0 / 255.0) alpha:1.0]];
-    	[splashLabel setBackgroundColor:[UIColor clearColor]];
-        [splashLabel setTransform:CGAffineTransformMakeRotation(-M_PI / 4)];
-        NSData *fontData = [NSData dataWithContentsOfFile:@"/Library/Application Support/mcsplash/minecraft.ttf"];
-        CGDataProviderRef provider = CGDataProviderCreateWithCFData((CFDataRef)fontData);
-        CGFontRef font = CGFontCreateWithDataProvider(provider);
-        CTFontManagerRegisterGraphicsFont(font, nil);
-        CFRelease(font);
-        CFRelease(provider);
-        if ([[NSFileManager defaultManager] fileExistsAtPath:@"/Library/MobileSubstrate/DynamicLibraries/AFont.dylib"]) {
-            if ([prefs objectForKey:@"blockAFont"]) {
-                if ([[prefs objectForKey:@"blockAFont"] boolValue]){
-                    [splashLabel setFont:[UIFont fontWithNameWithoutAFont:@"minecraft" size:11]];
-                } else {
-                    [splashLabel setFont:[UIFont fontWithName:@"minecraft" size:11]];
-                }
-            } else {
-                [splashLabel setFont:[UIFont fontWithNameWithoutAFont:@"minecraft" size:11]];
-            }
-        } else {
-            [splashLabel setFont:[UIFont fontWithName:@"minecraft" size:11]];
-        }
-	}
     NSArray *allSplashes = [NSArray arrayWithContentsOfFile:@"/Library/Application Support/mcsplash/splashes.plist"];
     NSUInteger randInx = arc4random() % [allSplashes count];
     [splashLabel setText:[allSplashes objectAtIndex:randInx]];
