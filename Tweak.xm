@@ -137,19 +137,22 @@ NSTimer *delayShrinkTimer;
 
 %new 
 -(float)MCSxOffset{
+    CGFloat width = CGRectGetWidth([[UIScreen mainScreen] bounds]);
+    float deviceConst = width * 100 / 375.0;
+
     NSDictionary *prefs;
     prefs = [[NSUserDefaults standardUserDefaults] persistentDomainForName:@"com.samgisaninja.mcsplashprefs"];
     if ([prefs objectForKey:@"xOff"]){
         if ([[prefs objectForKey:@"splashSide"] isEqual:@(0)]) {
-            return [[prefs objectForKey:@"xOff"] floatValue] - 100;
+            return [[prefs objectForKey:@"xOff"] floatValue] - deviceConst;
         } else {
-            return [[prefs objectForKey:@"xOff"] floatValue] + 100;
+            return [[prefs objectForKey:@"xOff"] floatValue] + deviceConst;
         }
     } else {
         if ([[prefs objectForKey:@"splashSide"] isEqual:@(0)]) {
-            return -100;
+            return -deviceConst;
         } else {
-            return 100;
+            return deviceConst;
         }
     }
 }
@@ -212,6 +215,8 @@ NSTimer *delayShrinkTimer;
             [coloredText addAttribute:NSForegroundColorAttributeName value:[UIColor colorWithRed:138.0/255.0 green:250.0/255.0 blue:110.0/255.0 alpha:1.0] range:NSMakeRange(9,1)];
             [splashLabel setAttributedText:coloredText];
         } else {
+            [splashLabel setTextColor:[UIColor colorWithRed:(250.0 / 255.0) green:(250.0 / 255.0) blue:(83.0 / 255.0) alpha:1.0]];
+    	    [splashLabel setBackgroundColor:[UIColor clearColor]];
             [splashLabel setText:text];
         }
     [UIView animateWithDuration:0.1 animations:^{
