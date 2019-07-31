@@ -11,6 +11,9 @@ NSTimer *delayShrinkTimer;
 -(float)MCSyOffset;
 @end
 
+@interface SBHomeScreenViewController : UIViewController
+@end
+
 @interface SBRootFolderView: UIView
 @end
 
@@ -51,15 +54,40 @@ NSTimer *delayShrinkTimer;
 #define _LOGOS_RETURN_RETAINED
 #endif
 
-@class SparkAlwaysOnController; @class SpringBoard; @class SBFLockScreenDateView; @class SBRootFolderView; 
-static void (*_logos_orig$_ungrouped$SpringBoard$applicationDidFinishLaunching$)(_LOGOS_SELF_TYPE_NORMAL SpringBoard* _LOGOS_SELF_CONST, SEL, id); static void _logos_method$_ungrouped$SpringBoard$applicationDidFinishLaunching$(_LOGOS_SELF_TYPE_NORMAL SpringBoard* _LOGOS_SELF_CONST, SEL, id); static void _logos_method$_ungrouped$SpringBoard$MCSCreateShrinkTimer(_LOGOS_SELF_TYPE_NORMAL SpringBoard* _LOGOS_SELF_CONST, SEL); static void _logos_method$_ungrouped$SpringBoard$MCSGrowLabel(_LOGOS_SELF_TYPE_NORMAL SpringBoard* _LOGOS_SELF_CONST, SEL); static void _logos_method$_ungrouped$SpringBoard$MCSShrinkLabel(_LOGOS_SELF_TYPE_NORMAL SpringBoard* _LOGOS_SELF_CONST, SEL); static float _logos_method$_ungrouped$SpringBoard$MCSxOffset(_LOGOS_SELF_TYPE_NORMAL SpringBoard* _LOGOS_SELF_CONST, SEL); static float _logos_method$_ungrouped$SpringBoard$MCSyOffset(_LOGOS_SELF_TYPE_NORMAL SpringBoard* _LOGOS_SELF_CONST, SEL); static void (*_logos_orig$_ungrouped$SBFLockScreenDateView$updateFormat)(_LOGOS_SELF_TYPE_NORMAL SBFLockScreenDateView* _LOGOS_SELF_CONST, SEL); static void _logos_method$_ungrouped$SBFLockScreenDateView$updateFormat(_LOGOS_SELF_TYPE_NORMAL SBFLockScreenDateView* _LOGOS_SELF_CONST, SEL); static void (*_logos_orig$_ungrouped$SBRootFolderView$_coverSheetWillPresent$)(_LOGOS_SELF_TYPE_NORMAL SBRootFolderView* _LOGOS_SELF_CONST, SEL, id); static void _logos_method$_ungrouped$SBRootFolderView$_coverSheetWillPresent$(_LOGOS_SELF_TYPE_NORMAL SBRootFolderView* _LOGOS_SELF_CONST, SEL, id); static void (*_logos_orig$_ungrouped$SparkAlwaysOnController$setScreenIsOn$withForceShow$)(_LOGOS_SELF_TYPE_NORMAL SparkAlwaysOnController* _LOGOS_SELF_CONST, SEL, _Bool, _Bool); static void _logos_method$_ungrouped$SparkAlwaysOnController$setScreenIsOn$withForceShow$(_LOGOS_SELF_TYPE_NORMAL SparkAlwaysOnController* _LOGOS_SELF_CONST, SEL, _Bool, _Bool); 
+@class SBFLockScreenDateView; @class SBLockScreenDateViewController; @class SparkAlwaysOnController; 
+static void (*_logos_orig$_ungrouped$SBFLockScreenDateView$updateFormat)(_LOGOS_SELF_TYPE_NORMAL SBFLockScreenDateView* _LOGOS_SELF_CONST, SEL); static void _logos_method$_ungrouped$SBFLockScreenDateView$updateFormat(_LOGOS_SELF_TYPE_NORMAL SBFLockScreenDateView* _LOGOS_SELF_CONST, SEL); static void (*_logos_orig$_ungrouped$SBLockScreenDateViewController$viewDidLoad)(_LOGOS_SELF_TYPE_NORMAL SBLockScreenDateViewController* _LOGOS_SELF_CONST, SEL); static void _logos_method$_ungrouped$SBLockScreenDateViewController$viewDidLoad(_LOGOS_SELF_TYPE_NORMAL SBLockScreenDateViewController* _LOGOS_SELF_CONST, SEL); static void (*_logos_orig$_ungrouped$SBLockScreenDateViewController$viewDidAppear$)(_LOGOS_SELF_TYPE_NORMAL SBLockScreenDateViewController* _LOGOS_SELF_CONST, SEL, BOOL); static void _logos_method$_ungrouped$SBLockScreenDateViewController$viewDidAppear$(_LOGOS_SELF_TYPE_NORMAL SBLockScreenDateViewController* _LOGOS_SELF_CONST, SEL, BOOL); static void _logos_method$_ungrouped$SBLockScreenDateViewController$MCSCreateShrinkTimer(_LOGOS_SELF_TYPE_NORMAL SBLockScreenDateViewController* _LOGOS_SELF_CONST, SEL); static void _logos_method$_ungrouped$SBLockScreenDateViewController$MCSGrowLabel(_LOGOS_SELF_TYPE_NORMAL SBLockScreenDateViewController* _LOGOS_SELF_CONST, SEL); static void _logos_method$_ungrouped$SBLockScreenDateViewController$MCSShrinkLabel(_LOGOS_SELF_TYPE_NORMAL SBLockScreenDateViewController* _LOGOS_SELF_CONST, SEL); static float _logos_method$_ungrouped$SBLockScreenDateViewController$MCSxOffset(_LOGOS_SELF_TYPE_NORMAL SBLockScreenDateViewController* _LOGOS_SELF_CONST, SEL); static float _logos_method$_ungrouped$SBLockScreenDateViewController$MCSyOffset(_LOGOS_SELF_TYPE_NORMAL SBLockScreenDateViewController* _LOGOS_SELF_CONST, SEL); static void (*_logos_orig$_ungrouped$SparkAlwaysOnController$setScreenIsOn$withForceShow$)(_LOGOS_SELF_TYPE_NORMAL SparkAlwaysOnController* _LOGOS_SELF_CONST, SEL, _Bool, _Bool); static void _logos_method$_ungrouped$SparkAlwaysOnController$setScreenIsOn$withForceShow$(_LOGOS_SELF_TYPE_NORMAL SparkAlwaysOnController* _LOGOS_SELF_CONST, SEL, _Bool, _Bool); 
 
-#line 32 "Tweak.xm"
+#line 35 "Tweak.xm"
 
 
-static void _logos_method$_ungrouped$SpringBoard$applicationDidFinishLaunching$(_LOGOS_SELF_TYPE_NORMAL SpringBoard* _LOGOS_SELF_CONST __unused self, SEL __unused _cmd, id arg1){
-    
-	if (!splashLabel) {
+
+static void _logos_method$_ungrouped$SBFLockScreenDateView$updateFormat(_LOGOS_SELF_TYPE_NORMAL SBFLockScreenDateView* _LOGOS_SELF_CONST __unused self, SEL __unused _cmd){
+    [self addSubview:splashLabel];
+    NSDictionary *prefs = [[NSUserDefaults standardUserDefaults] persistentDomainForName:@"com.samgisaninja.mcsplashprefs"];
+    if ([[prefs objectForKey:@"hideDate"] boolValue]) {
+        SBFLockScreenDateSubtitleDateView *dateView = MSHookIvar<SBFLockScreenDateSubtitleDateView *>(self, "_dateSubtitleView");
+        [dateView setHidden:TRUE];
+    } else {
+        SBFLockScreenDateSubtitleDateView *dateView = MSHookIvar<SBFLockScreenDateSubtitleDateView *>(self, "_dateSubtitleView");
+        [dateView setHidden:FALSE];
+    }
+    if ([[prefs objectForKey:@"hideTime"] boolValue]) {
+        SBUILegibilityLabel *timeView = MSHookIvar<SBUILegibilityLabel *>(self, "_timeLabel");
+        [timeView setHidden:TRUE];
+    } else {
+        SBUILegibilityLabel *timeView = MSHookIvar<SBUILegibilityLabel *>(self, "_timeLabel");
+        [timeView setHidden:FALSE];
+    }
+    _logos_orig$_ungrouped$SBFLockScreenDateView$updateFormat(self, _cmd);
+}
+
+
+
+
+
+static void _logos_method$_ungrouped$SBLockScreenDateViewController$viewDidLoad(_LOGOS_SELF_TYPE_NORMAL SBLockScreenDateViewController* _LOGOS_SELF_CONST __unused self, SEL __unused _cmd){
+    NSLog(@"NSLOGIFY: viewDidLoad!");
+    if (!splashLabel) {
         NSDictionary *prefs = [[NSUserDefaults standardUserDefaults] persistentDomainForName:@"com.samgisaninja.mcsplashprefs"];
         splashLabel = [[UILabel alloc] initWithFrame:CGRectMake([self MCSxOffset], [self MCSyOffset], 300, 20)];
         if ([[prefs objectForKey:@"splashSide"] isEqual:@(0)]) {
@@ -114,6 +142,7 @@ static void _logos_method$_ungrouped$SpringBoard$applicationDidFinishLaunching$(
     NSDictionary *prefs = [[NSUserDefaults standardUserDefaults] persistentDomainForName:@"com.samgisaninja.mcsplashprefs"];
     if ([[prefs objectForKey:@"enableAnimations"] boolValue]) {
         if (!growTimer) {
+            NSLog(@"NSLOGIFY: Created timers!");
             growTimer = [NSTimer scheduledTimerWithTimeInterval:0.5 target:self selector:@selector(MCSGrowLabel) userInfo:nil repeats:TRUE];
             delayShrinkTimer = [NSTimer scheduledTimerWithTimeInterval:0.25 target:self selector:@selector(MCSCreateShrinkTimer) userInfo:nil repeats:TRUE];
         }
@@ -124,106 +153,10 @@ static void _logos_method$_ungrouped$SpringBoard$applicationDidFinishLaunching$(
         }
     }
     
-    _logos_orig$_ungrouped$SpringBoard$applicationDidFinishLaunching$(self, _cmd, arg1);
+    _logos_orig$_ungrouped$SBLockScreenDateViewController$viewDidLoad(self, _cmd);
 }
 
-
-static void _logos_method$_ungrouped$SpringBoard$MCSCreateShrinkTimer(_LOGOS_SELF_TYPE_NORMAL SpringBoard* _LOGOS_SELF_CONST __unused self, SEL __unused _cmd){
-    NSDictionary *prefs = [[NSUserDefaults standardUserDefaults] persistentDomainForName:@"com.samgisaninja.mcsplashprefs"];
-    if (!shrinkTimer) {
-        if ([[prefs objectForKey:@"enableAnimations"] boolValue]) {
-            shrinkTimer = [NSTimer scheduledTimerWithTimeInterval:0.5 target:self selector:@selector(MCSShrinkLabel) userInfo:nil repeats:TRUE];
-        } else {
-            shrinkTimer = [NSTimer scheduledTimerWithTimeInterval:0.5 target:self selector:@selector(MCSShrinkLabel) userInfo:nil repeats:FALSE];
-        }
-    }
-    [delayShrinkTimer invalidate];
-    delayShrinkTimer = nil;
-}
-
-
-static void _logos_method$_ungrouped$SpringBoard$MCSGrowLabel(_LOGOS_SELF_TYPE_NORMAL SpringBoard* _LOGOS_SELF_CONST __unused self, SEL __unused _cmd){
-    [UIView animateWithDuration:0.25 animations:^{
-        [splashLabel setTransform:CGAffineTransformScale([splashLabel transform], 1.25, 1.25)];
-        [splashLabel setCenter:[splashLabel center]];
-    } completion:^(BOOL finished) {
-        [splashLabel sizeToFit];
-    }];
-}
-
-
-static void _logos_method$_ungrouped$SpringBoard$MCSShrinkLabel(_LOGOS_SELF_TYPE_NORMAL SpringBoard* _LOGOS_SELF_CONST __unused self, SEL __unused _cmd){
-    [UIView animateWithDuration:0.25 animations:^{
-        [splashLabel setTransform:CGAffineTransformScale([splashLabel transform], 0.8, 0.8)];
-        [splashLabel setCenter:[splashLabel center]];
-    } completion:^(BOOL finished) {
-        [splashLabel sizeToFit];
-    }];
-}
-
- 
-static float _logos_method$_ungrouped$SpringBoard$MCSxOffset(_LOGOS_SELF_TYPE_NORMAL SpringBoard* _LOGOS_SELF_CONST __unused self, SEL __unused _cmd){
-    CGFloat width = CGRectGetWidth([[UIScreen mainScreen] bounds]);
-    float deviceConst = width * 100 / 375.0;
-
-    NSDictionary *prefs;
-    prefs = [[NSUserDefaults standardUserDefaults] persistentDomainForName:@"com.samgisaninja.mcsplashprefs"];
-    if ([prefs objectForKey:@"xOff"]){
-        if ([[prefs objectForKey:@"splashSide"] isEqual:@(0)]) {
-            return [[prefs objectForKey:@"xOff"] floatValue] - deviceConst;
-        } else {
-            return [[prefs objectForKey:@"xOff"] floatValue] + deviceConst;
-        }
-    } else {
-        if ([[prefs objectForKey:@"splashSide"] isEqual:@(0)]) {
-            return -deviceConst;
-        } else {
-            return deviceConst;
-        }
-    }
-}
-
- 
-static float _logos_method$_ungrouped$SpringBoard$MCSyOffset(_LOGOS_SELF_TYPE_NORMAL SpringBoard* _LOGOS_SELF_CONST __unused self, SEL __unused _cmd){
-    NSDictionary *prefs;
-    prefs = [[NSUserDefaults standardUserDefaults] persistentDomainForName:@"com.samgisaninja.mcsplashprefs"];
-    if ([prefs objectForKey:@"yOff"]){
-        return [[prefs objectForKey:@"yOff"] floatValue]+ 100;
-    } else {
-        return 100;
-    }
-}
-
-
-
-
-
-
-static void _logos_method$_ungrouped$SBFLockScreenDateView$updateFormat(_LOGOS_SELF_TYPE_NORMAL SBFLockScreenDateView* _LOGOS_SELF_CONST __unused self, SEL __unused _cmd){
-    [self addSubview:splashLabel];
-    NSDictionary *prefs = [[NSUserDefaults standardUserDefaults] persistentDomainForName:@"com.samgisaninja.mcsplashprefs"];
-    if ([[prefs objectForKey:@"hideDate"] boolValue]) {
-        SBFLockScreenDateSubtitleDateView *dateView = MSHookIvar<SBFLockScreenDateSubtitleDateView *>(self, "_dateSubtitleView");
-        [dateView setHidden:TRUE];
-    } else {
-        SBFLockScreenDateSubtitleDateView *dateView = MSHookIvar<SBFLockScreenDateSubtitleDateView *>(self, "_dateSubtitleView");
-        [dateView setHidden:FALSE];
-    }
-    if ([[prefs objectForKey:@"hideTime"] boolValue]) {
-        SBUILegibilityLabel *timeView = MSHookIvar<SBUILegibilityLabel *>(self, "_timeLabel");
-        [timeView setHidden:TRUE];
-    } else {
-        SBUILegibilityLabel *timeView = MSHookIvar<SBUILegibilityLabel *>(self, "_timeLabel");
-        [timeView setHidden:FALSE];
-    }
-    _logos_orig$_ungrouped$SBFLockScreenDateView$updateFormat(self, _cmd);
-}
-
-
-
-
-
-static void _logos_method$_ungrouped$SBRootFolderView$_coverSheetWillPresent$(_LOGOS_SELF_TYPE_NORMAL SBRootFolderView* _LOGOS_SELF_CONST __unused self, SEL __unused _cmd, id arg1){
+static void _logos_method$_ungrouped$SBLockScreenDateViewController$viewDidAppear$(_LOGOS_SELF_TYPE_NORMAL SBLockScreenDateViewController* _LOGOS_SELF_CONST __unused self, SEL __unused _cmd, BOOL animated){
     NSArray *allSplashes = [NSArray arrayWithContentsOfFile:@"/Library/Application Support/mcsplash/splashes.plist"];
     NSUInteger randInx = arc4random() % [allSplashes count];
     NSString *text = [allSplashes objectAtIndex:(unsigned long)randInx];
@@ -251,7 +184,76 @@ static void _logos_method$_ungrouped$SBRootFolderView$_coverSheetWillPresent$(_L
         } completion:^(BOOL finished) {
             [splashLabel sizeToFit];
         }];
-    _logos_orig$_ungrouped$SBRootFolderView$_coverSheetWillPresent$(self, _cmd, arg1);
+    _logos_orig$_ungrouped$SBLockScreenDateViewController$viewDidAppear$(self, _cmd, animated);
+}
+
+
+static void _logos_method$_ungrouped$SBLockScreenDateViewController$MCSCreateShrinkTimer(_LOGOS_SELF_TYPE_NORMAL SBLockScreenDateViewController* _LOGOS_SELF_CONST __unused self, SEL __unused _cmd){
+    NSDictionary *prefs = [[NSUserDefaults standardUserDefaults] persistentDomainForName:@"com.samgisaninja.mcsplashprefs"];
+    if (!shrinkTimer) {
+        if ([[prefs objectForKey:@"enableAnimations"] boolValue]) {
+            shrinkTimer = [NSTimer scheduledTimerWithTimeInterval:0.5 target:self selector:@selector(MCSShrinkLabel) userInfo:nil repeats:TRUE];
+        } else {
+            shrinkTimer = [NSTimer scheduledTimerWithTimeInterval:0.5 target:self selector:@selector(MCSShrinkLabel) userInfo:nil repeats:FALSE];
+        }
+    }
+    [delayShrinkTimer invalidate];
+    delayShrinkTimer = nil;
+}
+
+
+static void _logos_method$_ungrouped$SBLockScreenDateViewController$MCSGrowLabel(_LOGOS_SELF_TYPE_NORMAL SBLockScreenDateViewController* _LOGOS_SELF_CONST __unused self, SEL __unused _cmd){
+    NSLog(@"NSLOGIFY: grow!");
+    [UIView animateWithDuration:0.25 animations:^{
+        [splashLabel setTransform:CGAffineTransformScale([splashLabel transform], 1.25, 1.25)];
+        [splashLabel setCenter:[splashLabel center]];
+    } completion:^(BOOL finished) {
+        [splashLabel sizeToFit];
+    }];
+}
+
+
+static void _logos_method$_ungrouped$SBLockScreenDateViewController$MCSShrinkLabel(_LOGOS_SELF_TYPE_NORMAL SBLockScreenDateViewController* _LOGOS_SELF_CONST __unused self, SEL __unused _cmd){
+    NSLog(@"NSLOGIFY: shrink!");
+    [UIView animateWithDuration:0.25 animations:^{
+        [splashLabel setTransform:CGAffineTransformScale([splashLabel transform], 0.8, 0.8)];
+        [splashLabel setCenter:[splashLabel center]];
+    } completion:^(BOOL finished) {
+        [splashLabel sizeToFit];
+    }];
+}
+
+ 
+static float _logos_method$_ungrouped$SBLockScreenDateViewController$MCSxOffset(_LOGOS_SELF_TYPE_NORMAL SBLockScreenDateViewController* _LOGOS_SELF_CONST __unused self, SEL __unused _cmd){
+    CGFloat width = CGRectGetWidth([[UIScreen mainScreen] bounds]);
+    float deviceConst = width * 100 / 375.0;
+
+    NSDictionary *prefs;
+    prefs = [[NSUserDefaults standardUserDefaults] persistentDomainForName:@"com.samgisaninja.mcsplashprefs"];
+    if ([prefs objectForKey:@"xOff"]){
+        if ([[prefs objectForKey:@"splashSide"] isEqual:@(0)]) {
+            return [[prefs objectForKey:@"xOff"] floatValue] - deviceConst;
+        } else {
+            return [[prefs objectForKey:@"xOff"] floatValue] + deviceConst;
+        }
+    } else {
+        if ([[prefs objectForKey:@"splashSide"] isEqual:@(0)]) {
+            return -deviceConst;
+        } else {
+            return deviceConst;
+        }
+    }
+}
+
+ 
+static float _logos_method$_ungrouped$SBLockScreenDateViewController$MCSyOffset(_LOGOS_SELF_TYPE_NORMAL SBLockScreenDateViewController* _LOGOS_SELF_CONST __unused self, SEL __unused _cmd){
+    NSDictionary *prefs;
+    prefs = [[NSUserDefaults standardUserDefaults] persistentDomainForName:@"com.samgisaninja.mcsplashprefs"];
+    if ([prefs objectForKey:@"yOff"]){
+        return [[prefs objectForKey:@"yOff"] floatValue]+ 100;
+    } else {
+        return 100;
+    }
 }
 
 
@@ -307,7 +309,7 @@ static void _logos_method$_ungrouped$SparkAlwaysOnController$setScreenIsOn$withF
 
 
 
-static __attribute__((constructor)) void _logosLocalCtor_b2dac52d(int __unused argc, char __unused **argv, char __unused **envp){
+static __attribute__((constructor)) void _logosLocalCtor_abe821c7(int __unused argc, char __unused **argv, char __unused **envp){
     NSDictionary *prefs = [[NSUserDefaults standardUserDefaults] persistentDomainForName:@"com.samgisaninja.mcsplashprefs"];
     if (!prefs) {
         NSMutableDictionary *mutablePrefs = [[NSMutableDictionary alloc] init];
@@ -320,6 +322,6 @@ static __attribute__((constructor)) void _logosLocalCtor_b2dac52d(int __unused a
         prefs = [NSDictionary dictionaryWithDictionary:mutablePrefs];
     }
     if ([[prefs objectForKey:@"isEnabled"] boolValue]) {
-        {Class _logos_class$_ungrouped$SpringBoard = objc_getClass("SpringBoard"); MSHookMessageEx(_logos_class$_ungrouped$SpringBoard, @selector(applicationDidFinishLaunching:), (IMP)&_logos_method$_ungrouped$SpringBoard$applicationDidFinishLaunching$, (IMP*)&_logos_orig$_ungrouped$SpringBoard$applicationDidFinishLaunching$);{ char _typeEncoding[1024]; unsigned int i = 0; _typeEncoding[i] = 'v'; i += 1; _typeEncoding[i] = '@'; i += 1; _typeEncoding[i] = ':'; i += 1; _typeEncoding[i] = '\0'; class_addMethod(_logos_class$_ungrouped$SpringBoard, @selector(MCSCreateShrinkTimer), (IMP)&_logos_method$_ungrouped$SpringBoard$MCSCreateShrinkTimer, _typeEncoding); }{ char _typeEncoding[1024]; unsigned int i = 0; _typeEncoding[i] = 'v'; i += 1; _typeEncoding[i] = '@'; i += 1; _typeEncoding[i] = ':'; i += 1; _typeEncoding[i] = '\0'; class_addMethod(_logos_class$_ungrouped$SpringBoard, @selector(MCSGrowLabel), (IMP)&_logos_method$_ungrouped$SpringBoard$MCSGrowLabel, _typeEncoding); }{ char _typeEncoding[1024]; unsigned int i = 0; _typeEncoding[i] = 'v'; i += 1; _typeEncoding[i] = '@'; i += 1; _typeEncoding[i] = ':'; i += 1; _typeEncoding[i] = '\0'; class_addMethod(_logos_class$_ungrouped$SpringBoard, @selector(MCSShrinkLabel), (IMP)&_logos_method$_ungrouped$SpringBoard$MCSShrinkLabel, _typeEncoding); }{ char _typeEncoding[1024]; unsigned int i = 0; _typeEncoding[i] = 'f'; i += 1; _typeEncoding[i] = '@'; i += 1; _typeEncoding[i] = ':'; i += 1; _typeEncoding[i] = '\0'; class_addMethod(_logos_class$_ungrouped$SpringBoard, @selector(MCSxOffset), (IMP)&_logos_method$_ungrouped$SpringBoard$MCSxOffset, _typeEncoding); }{ char _typeEncoding[1024]; unsigned int i = 0; _typeEncoding[i] = 'f'; i += 1; _typeEncoding[i] = '@'; i += 1; _typeEncoding[i] = ':'; i += 1; _typeEncoding[i] = '\0'; class_addMethod(_logos_class$_ungrouped$SpringBoard, @selector(MCSyOffset), (IMP)&_logos_method$_ungrouped$SpringBoard$MCSyOffset, _typeEncoding); }Class _logos_class$_ungrouped$SBFLockScreenDateView = objc_getClass("SBFLockScreenDateView"); MSHookMessageEx(_logos_class$_ungrouped$SBFLockScreenDateView, @selector(updateFormat), (IMP)&_logos_method$_ungrouped$SBFLockScreenDateView$updateFormat, (IMP*)&_logos_orig$_ungrouped$SBFLockScreenDateView$updateFormat);Class _logos_class$_ungrouped$SBRootFolderView = objc_getClass("SBRootFolderView"); MSHookMessageEx(_logos_class$_ungrouped$SBRootFolderView, @selector(_coverSheetWillPresent:), (IMP)&_logos_method$_ungrouped$SBRootFolderView$_coverSheetWillPresent$, (IMP*)&_logos_orig$_ungrouped$SBRootFolderView$_coverSheetWillPresent$);Class _logos_class$_ungrouped$SparkAlwaysOnController = objc_getClass("SparkAlwaysOnController"); MSHookMessageEx(_logos_class$_ungrouped$SparkAlwaysOnController, @selector(setScreenIsOn:withForceShow:), (IMP)&_logos_method$_ungrouped$SparkAlwaysOnController$setScreenIsOn$withForceShow$, (IMP*)&_logos_orig$_ungrouped$SparkAlwaysOnController$setScreenIsOn$withForceShow$);}
+        {Class _logos_class$_ungrouped$SBFLockScreenDateView = objc_getClass("SBFLockScreenDateView"); MSHookMessageEx(_logos_class$_ungrouped$SBFLockScreenDateView, @selector(updateFormat), (IMP)&_logos_method$_ungrouped$SBFLockScreenDateView$updateFormat, (IMP*)&_logos_orig$_ungrouped$SBFLockScreenDateView$updateFormat);Class _logos_class$_ungrouped$SBLockScreenDateViewController = objc_getClass("SBLockScreenDateViewController"); MSHookMessageEx(_logos_class$_ungrouped$SBLockScreenDateViewController, @selector(viewDidLoad), (IMP)&_logos_method$_ungrouped$SBLockScreenDateViewController$viewDidLoad, (IMP*)&_logos_orig$_ungrouped$SBLockScreenDateViewController$viewDidLoad);MSHookMessageEx(_logos_class$_ungrouped$SBLockScreenDateViewController, @selector(viewDidAppear:), (IMP)&_logos_method$_ungrouped$SBLockScreenDateViewController$viewDidAppear$, (IMP*)&_logos_orig$_ungrouped$SBLockScreenDateViewController$viewDidAppear$);{ char _typeEncoding[1024]; unsigned int i = 0; _typeEncoding[i] = 'v'; i += 1; _typeEncoding[i] = '@'; i += 1; _typeEncoding[i] = ':'; i += 1; _typeEncoding[i] = '\0'; class_addMethod(_logos_class$_ungrouped$SBLockScreenDateViewController, @selector(MCSCreateShrinkTimer), (IMP)&_logos_method$_ungrouped$SBLockScreenDateViewController$MCSCreateShrinkTimer, _typeEncoding); }{ char _typeEncoding[1024]; unsigned int i = 0; _typeEncoding[i] = 'v'; i += 1; _typeEncoding[i] = '@'; i += 1; _typeEncoding[i] = ':'; i += 1; _typeEncoding[i] = '\0'; class_addMethod(_logos_class$_ungrouped$SBLockScreenDateViewController, @selector(MCSGrowLabel), (IMP)&_logos_method$_ungrouped$SBLockScreenDateViewController$MCSGrowLabel, _typeEncoding); }{ char _typeEncoding[1024]; unsigned int i = 0; _typeEncoding[i] = 'v'; i += 1; _typeEncoding[i] = '@'; i += 1; _typeEncoding[i] = ':'; i += 1; _typeEncoding[i] = '\0'; class_addMethod(_logos_class$_ungrouped$SBLockScreenDateViewController, @selector(MCSShrinkLabel), (IMP)&_logos_method$_ungrouped$SBLockScreenDateViewController$MCSShrinkLabel, _typeEncoding); }{ char _typeEncoding[1024]; unsigned int i = 0; _typeEncoding[i] = 'f'; i += 1; _typeEncoding[i] = '@'; i += 1; _typeEncoding[i] = ':'; i += 1; _typeEncoding[i] = '\0'; class_addMethod(_logos_class$_ungrouped$SBLockScreenDateViewController, @selector(MCSxOffset), (IMP)&_logos_method$_ungrouped$SBLockScreenDateViewController$MCSxOffset, _typeEncoding); }{ char _typeEncoding[1024]; unsigned int i = 0; _typeEncoding[i] = 'f'; i += 1; _typeEncoding[i] = '@'; i += 1; _typeEncoding[i] = ':'; i += 1; _typeEncoding[i] = '\0'; class_addMethod(_logos_class$_ungrouped$SBLockScreenDateViewController, @selector(MCSyOffset), (IMP)&_logos_method$_ungrouped$SBLockScreenDateViewController$MCSyOffset, _typeEncoding); }Class _logos_class$_ungrouped$SparkAlwaysOnController = objc_getClass("SparkAlwaysOnController"); MSHookMessageEx(_logos_class$_ungrouped$SparkAlwaysOnController, @selector(setScreenIsOn:withForceShow:), (IMP)&_logos_method$_ungrouped$SparkAlwaysOnController$setScreenIsOn$withForceShow$, (IMP*)&_logos_orig$_ungrouped$SparkAlwaysOnController$setScreenIsOn$withForceShow$);}
     }
 }

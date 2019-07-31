@@ -10,6 +10,9 @@ NSTimer *delayShrinkTimer;
 -(float)MCSyOffset;
 @end
 
+@interface SBHomeScreenViewController : UIViewController
+@end
+
 @interface SBRootFolderView: UIView
 @end
 
@@ -29,11 +32,36 @@ NSTimer *delayShrinkTimer;
 @end
 
 
-%hook SpringBoard
+%hook SBFLockScreenDateView
 
--(void)applicationDidFinishLaunching:(id)arg1{
-    
-	if (!splashLabel) {
+
+-(void)updateFormat{
+    [self addSubview:splashLabel];
+    NSDictionary *prefs = [[NSUserDefaults standardUserDefaults] persistentDomainForName:@"com.samgisaninja.mcsplashprefs"];
+    if ([[prefs objectForKey:@"hideDate"] boolValue]) {
+        SBFLockScreenDateSubtitleDateView *dateView = MSHookIvar<SBFLockScreenDateSubtitleDateView *>(self, "_dateSubtitleView");
+        [dateView setHidden:TRUE];
+    } else {
+        SBFLockScreenDateSubtitleDateView *dateView = MSHookIvar<SBFLockScreenDateSubtitleDateView *>(self, "_dateSubtitleView");
+        [dateView setHidden:FALSE];
+    }
+    if ([[prefs objectForKey:@"hideTime"] boolValue]) {
+        SBUILegibilityLabel *timeView = MSHookIvar<SBUILegibilityLabel *>(self, "_timeLabel");
+        [timeView setHidden:TRUE];
+    } else {
+        SBUILegibilityLabel *timeView = MSHookIvar<SBUILegibilityLabel *>(self, "_timeLabel");
+        [timeView setHidden:FALSE];
+    }
+    %orig;
+}
+
+%end
+
+%hook SBLockScreenDateViewController
+
+-(void)viewDidLoad{
+    NSLog(@"NSLOGIFY: viewDidLoad!");
+    if (!splashLabel) {
         NSDictionary *prefs = [[NSUserDefaults standardUserDefaults] persistentDomainForName:@"com.samgisaninja.mcsplashprefs"];
         splashLabel = [[UILabel alloc] initWithFrame:CGRectMake([self MCSxOffset], [self MCSyOffset], 300, 20)];
         if ([[prefs objectForKey:@"splashSide"] isEqual:@(0)]) {
@@ -88,6 +116,7 @@ NSTimer *delayShrinkTimer;
     NSDictionary *prefs = [[NSUserDefaults standardUserDefaults] persistentDomainForName:@"com.samgisaninja.mcsplashprefs"];
     if ([[prefs objectForKey:@"enableAnimations"] boolValue]) {
         if (!growTimer) {
+            NSLog(@"NSLOGIFY: Created timers!");
             growTimer = [NSTimer scheduledTimerWithTimeInterval:0.5 target:self selector:@selector(MCSGrowLabel) userInfo:nil repeats:TRUE];
             delayShrinkTimer = [NSTimer scheduledTimerWithTimeInterval:0.25 target:self selector:@selector(MCSCreateShrinkTimer) userInfo:nil repeats:TRUE];
         }
@@ -98,6 +127,37 @@ NSTimer *delayShrinkTimer;
         }
     }
     
+    %orig;
+}
+
+-(void)viewDidAppear:(BOOL)animated{
+    NSArray *allSplashes = [NSArray arrayWithContentsOfFile:@"/Library/Application Support/mcsplash/splashes.plist"];
+    NSUInteger randInx = arc4random() % [allSplashes count];
+    NSString *text = [allSplashes objectAtIndex:(unsigned long)randInx];
+    if ([text isEqualToString:@"§1C§2o§3l§4o§5r§6m§7a§8t§9i§ac"]){
+            NSMutableAttributedString *coloredText = [[NSMutableAttributedString alloc] initWithString:@"Colormatic"];
+            [coloredText addAttribute:NSForegroundColorAttributeName value:[UIColor colorWithRed:0.0/255.0 green:20.0/255.0 blue:163.0/255.0 alpha:1.0] range:NSMakeRange(0,1)];
+            [coloredText addAttribute:NSForegroundColorAttributeName value:[UIColor colorWithRed:76.0/255.0 green:166.0/255.0 blue:48.0/255.0 alpha:1.0] range:NSMakeRange(1,1)];
+            [coloredText addAttribute:NSForegroundColorAttributeName value:[UIColor colorWithRed:74.0/255.0 green:167.0/255.0 blue:169.0/255.0 alpha:1.0] range:NSMakeRange(2,1)];
+            [coloredText addAttribute:NSForegroundColorAttributeName value:[UIColor colorWithRed:156.0/255.0 green:30.0/255.0 blue:20.0/255.0 alpha:1.0] range:NSMakeRange(3,1)];
+            [coloredText addAttribute:NSForegroundColorAttributeName value:[UIColor colorWithRed:156.0/255.0 green:39.0/255.0 blue:164.0/255.0 alpha:1.0] range:NSMakeRange(4,1)];
+            [coloredText addAttribute:NSForegroundColorAttributeName value:[UIColor colorWithRed:243.0/255.0 green:172.0/255.0 blue:61.0/255.0 alpha:1.0] range:NSMakeRange(5,1)];
+            [coloredText addAttribute:NSForegroundColorAttributeName value:[UIColor colorWithRed:170.0/255.0 green:170.0/255.0 blue:170.0/255.0 alpha:1.0] range:NSMakeRange(6,1)];
+            [coloredText addAttribute:NSForegroundColorAttributeName value:[UIColor colorWithRed:85.0/255.0 green:85.0/255.0 blue:85.0/255.0 alpha:1.0] range:NSMakeRange(7,1)];
+            [coloredText addAttribute:NSForegroundColorAttributeName value:[UIColor colorWithRed:82.0/255.0 green:92.0/255.0 blue:246.0/255.0 alpha:1.0] range:NSMakeRange(8,1)];
+            [coloredText addAttribute:NSForegroundColorAttributeName value:[UIColor colorWithRed:138.0/255.0 green:250.0/255.0 blue:110.0/255.0 alpha:1.0] range:NSMakeRange(9,1)];
+            [splashLabel setAttributedText:coloredText];
+        } else {
+            [splashLabel setTextColor:[UIColor colorWithRed:(250.0 / 255.0) green:(250.0 / 255.0) blue:(83.0 / 255.0) alpha:1.0]];
+    	    [splashLabel setBackgroundColor:[UIColor clearColor]];
+            [splashLabel setText:text];
+        }
+    [UIView animateWithDuration:0.1 animations:^{
+        [splashLabel setTransform:CGAffineTransformScale([splashLabel transform], 1.0, 1.0)];
+        [splashLabel setCenter:[splashLabel center]];
+        } completion:^(BOOL finished) {
+            [splashLabel sizeToFit];
+        }];
     %orig;
 }
 
@@ -117,6 +177,7 @@ NSTimer *delayShrinkTimer;
 
 %new
 -(void)MCSGrowLabel{
+    NSLog(@"NSLOGIFY: grow!");
     [UIView animateWithDuration:0.25 animations:^{
         [splashLabel setTransform:CGAffineTransformScale([splashLabel transform], 1.25, 1.25)];
         [splashLabel setCenter:[splashLabel center]];
@@ -127,6 +188,7 @@ NSTimer *delayShrinkTimer;
 
 %new
 -(void)MCSShrinkLabel{
+    NSLog(@"NSLOGIFY: shrink!");
     [UIView animateWithDuration:0.25 animations:^{
         [splashLabel setTransform:CGAffineTransformScale([splashLabel transform], 0.8, 0.8)];
         [splashLabel setCenter:[splashLabel center]];
@@ -166,66 +228,6 @@ NSTimer *delayShrinkTimer;
     } else {
         return 100;
     }
-}
-
-%end
-
-%hook SBFLockScreenDateView
-
-
--(void)updateFormat{
-    [self addSubview:splashLabel];
-    NSDictionary *prefs = [[NSUserDefaults standardUserDefaults] persistentDomainForName:@"com.samgisaninja.mcsplashprefs"];
-    if ([[prefs objectForKey:@"hideDate"] boolValue]) {
-        SBFLockScreenDateSubtitleDateView *dateView = MSHookIvar<SBFLockScreenDateSubtitleDateView *>(self, "_dateSubtitleView");
-        [dateView setHidden:TRUE];
-    } else {
-        SBFLockScreenDateSubtitleDateView *dateView = MSHookIvar<SBFLockScreenDateSubtitleDateView *>(self, "_dateSubtitleView");
-        [dateView setHidden:FALSE];
-    }
-    if ([[prefs objectForKey:@"hideTime"] boolValue]) {
-        SBUILegibilityLabel *timeView = MSHookIvar<SBUILegibilityLabel *>(self, "_timeLabel");
-        [timeView setHidden:TRUE];
-    } else {
-        SBUILegibilityLabel *timeView = MSHookIvar<SBUILegibilityLabel *>(self, "_timeLabel");
-        [timeView setHidden:FALSE];
-    }
-    %orig;
-}
-
-%end
-
-%hook SBRootFolderView
-
--(void)_coverSheetWillPresent:(id)arg1{
-    NSArray *allSplashes = [NSArray arrayWithContentsOfFile:@"/Library/Application Support/mcsplash/splashes.plist"];
-    NSUInteger randInx = arc4random() % [allSplashes count];
-    NSString *text = [allSplashes objectAtIndex:(unsigned long)randInx];
-    if ([text isEqualToString:@"§1C§2o§3l§4o§5r§6m§7a§8t§9i§ac"]){
-            NSMutableAttributedString *coloredText = [[NSMutableAttributedString alloc] initWithString:@"Colormatic"];
-            [coloredText addAttribute:NSForegroundColorAttributeName value:[UIColor colorWithRed:0.0/255.0 green:20.0/255.0 blue:163.0/255.0 alpha:1.0] range:NSMakeRange(0,1)];
-            [coloredText addAttribute:NSForegroundColorAttributeName value:[UIColor colorWithRed:76.0/255.0 green:166.0/255.0 blue:48.0/255.0 alpha:1.0] range:NSMakeRange(1,1)];
-            [coloredText addAttribute:NSForegroundColorAttributeName value:[UIColor colorWithRed:74.0/255.0 green:167.0/255.0 blue:169.0/255.0 alpha:1.0] range:NSMakeRange(2,1)];
-            [coloredText addAttribute:NSForegroundColorAttributeName value:[UIColor colorWithRed:156.0/255.0 green:30.0/255.0 blue:20.0/255.0 alpha:1.0] range:NSMakeRange(3,1)];
-            [coloredText addAttribute:NSForegroundColorAttributeName value:[UIColor colorWithRed:156.0/255.0 green:39.0/255.0 blue:164.0/255.0 alpha:1.0] range:NSMakeRange(4,1)];
-            [coloredText addAttribute:NSForegroundColorAttributeName value:[UIColor colorWithRed:243.0/255.0 green:172.0/255.0 blue:61.0/255.0 alpha:1.0] range:NSMakeRange(5,1)];
-            [coloredText addAttribute:NSForegroundColorAttributeName value:[UIColor colorWithRed:170.0/255.0 green:170.0/255.0 blue:170.0/255.0 alpha:1.0] range:NSMakeRange(6,1)];
-            [coloredText addAttribute:NSForegroundColorAttributeName value:[UIColor colorWithRed:85.0/255.0 green:85.0/255.0 blue:85.0/255.0 alpha:1.0] range:NSMakeRange(7,1)];
-            [coloredText addAttribute:NSForegroundColorAttributeName value:[UIColor colorWithRed:82.0/255.0 green:92.0/255.0 blue:246.0/255.0 alpha:1.0] range:NSMakeRange(8,1)];
-            [coloredText addAttribute:NSForegroundColorAttributeName value:[UIColor colorWithRed:138.0/255.0 green:250.0/255.0 blue:110.0/255.0 alpha:1.0] range:NSMakeRange(9,1)];
-            [splashLabel setAttributedText:coloredText];
-        } else {
-            [splashLabel setTextColor:[UIColor colorWithRed:(250.0 / 255.0) green:(250.0 / 255.0) blue:(83.0 / 255.0) alpha:1.0]];
-    	    [splashLabel setBackgroundColor:[UIColor clearColor]];
-            [splashLabel setText:text];
-        }
-    [UIView animateWithDuration:0.1 animations:^{
-        [splashLabel setTransform:CGAffineTransformScale([splashLabel transform], 1.0, 1.0)];
-        [splashLabel setCenter:[splashLabel center]];
-        } completion:^(BOOL finished) {
-            [splashLabel sizeToFit];
-        }];
-    %orig;
 }
 
 %end
