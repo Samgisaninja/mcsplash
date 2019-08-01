@@ -6,18 +6,9 @@ NSTimer *shrinkTimer;
 NSTimer *growTimer;
 NSTimer *delayShrinkTimer;
 
-@interface SpringBoard
+@interface SBLockScreenDateViewController : UIViewController
 -(float)MCSxOffset;
 -(float)MCSyOffset;
-@end
-
-@interface SBHomeScreenViewController : UIViewController
-@end
-
-@interface SBRootFolderView: UIView
-@end
-
-@interface SBFLockScreenDateView : UIView
 @end
 
 @interface SBFLockScreenDateSubtitleDateView : UIView
@@ -31,7 +22,6 @@ NSTimer *delayShrinkTimer;
 @interface UIFont (AFontPrivate)
 + (id)fontWithNameWithoutAFont:(NSString *)arg1 size:(double)arg2;
 @end
-
 
 
 #include <substrate.h>
@@ -54,41 +44,15 @@ NSTimer *delayShrinkTimer;
 #define _LOGOS_RETURN_RETAINED
 #endif
 
-@class SBFLockScreenDateView; @class SBLockScreenDateViewController; @class SparkAlwaysOnController; 
-static void (*_logos_orig$_ungrouped$SBFLockScreenDateView$updateFormat)(_LOGOS_SELF_TYPE_NORMAL SBFLockScreenDateView* _LOGOS_SELF_CONST, SEL); static void _logos_method$_ungrouped$SBFLockScreenDateView$updateFormat(_LOGOS_SELF_TYPE_NORMAL SBFLockScreenDateView* _LOGOS_SELF_CONST, SEL); static void (*_logos_orig$_ungrouped$SBLockScreenDateViewController$viewDidLoad)(_LOGOS_SELF_TYPE_NORMAL SBLockScreenDateViewController* _LOGOS_SELF_CONST, SEL); static void _logos_method$_ungrouped$SBLockScreenDateViewController$viewDidLoad(_LOGOS_SELF_TYPE_NORMAL SBLockScreenDateViewController* _LOGOS_SELF_CONST, SEL); static void (*_logos_orig$_ungrouped$SBLockScreenDateViewController$viewDidAppear$)(_LOGOS_SELF_TYPE_NORMAL SBLockScreenDateViewController* _LOGOS_SELF_CONST, SEL, BOOL); static void _logos_method$_ungrouped$SBLockScreenDateViewController$viewDidAppear$(_LOGOS_SELF_TYPE_NORMAL SBLockScreenDateViewController* _LOGOS_SELF_CONST, SEL, BOOL); static void _logos_method$_ungrouped$SBLockScreenDateViewController$MCSCreateShrinkTimer(_LOGOS_SELF_TYPE_NORMAL SBLockScreenDateViewController* _LOGOS_SELF_CONST, SEL); static void _logos_method$_ungrouped$SBLockScreenDateViewController$MCSGrowLabel(_LOGOS_SELF_TYPE_NORMAL SBLockScreenDateViewController* _LOGOS_SELF_CONST, SEL); static void _logos_method$_ungrouped$SBLockScreenDateViewController$MCSShrinkLabel(_LOGOS_SELF_TYPE_NORMAL SBLockScreenDateViewController* _LOGOS_SELF_CONST, SEL); static float _logos_method$_ungrouped$SBLockScreenDateViewController$MCSxOffset(_LOGOS_SELF_TYPE_NORMAL SBLockScreenDateViewController* _LOGOS_SELF_CONST, SEL); static float _logos_method$_ungrouped$SBLockScreenDateViewController$MCSyOffset(_LOGOS_SELF_TYPE_NORMAL SBLockScreenDateViewController* _LOGOS_SELF_CONST, SEL); static void (*_logos_orig$_ungrouped$SparkAlwaysOnController$setScreenIsOn$withForceShow$)(_LOGOS_SELF_TYPE_NORMAL SparkAlwaysOnController* _LOGOS_SELF_CONST, SEL, _Bool, _Bool); static void _logos_method$_ungrouped$SparkAlwaysOnController$setScreenIsOn$withForceShow$(_LOGOS_SELF_TYPE_NORMAL SparkAlwaysOnController* _LOGOS_SELF_CONST, SEL, _Bool, _Bool); 
+@class SBLockScreenDateViewController; @class SparkAlwaysOnController; 
+static void (*_logos_orig$_ungrouped$SBLockScreenDateViewController$viewDidLoad)(_LOGOS_SELF_TYPE_NORMAL SBLockScreenDateViewController* _LOGOS_SELF_CONST, SEL); static void _logos_method$_ungrouped$SBLockScreenDateViewController$viewDidLoad(_LOGOS_SELF_TYPE_NORMAL SBLockScreenDateViewController* _LOGOS_SELF_CONST, SEL); static void (*_logos_orig$_ungrouped$SBLockScreenDateViewController$viewDidAppear$)(_LOGOS_SELF_TYPE_NORMAL SBLockScreenDateViewController* _LOGOS_SELF_CONST, SEL, BOOL); static void _logos_method$_ungrouped$SBLockScreenDateViewController$viewDidAppear$(_LOGOS_SELF_TYPE_NORMAL SBLockScreenDateViewController* _LOGOS_SELF_CONST, SEL, BOOL); static void _logos_method$_ungrouped$SBLockScreenDateViewController$MCSCreateShrinkTimer(_LOGOS_SELF_TYPE_NORMAL SBLockScreenDateViewController* _LOGOS_SELF_CONST, SEL); static void _logos_method$_ungrouped$SBLockScreenDateViewController$MCSGrowLabel(_LOGOS_SELF_TYPE_NORMAL SBLockScreenDateViewController* _LOGOS_SELF_CONST, SEL); static void _logos_method$_ungrouped$SBLockScreenDateViewController$MCSShrinkLabel(_LOGOS_SELF_TYPE_NORMAL SBLockScreenDateViewController* _LOGOS_SELF_CONST, SEL); static float _logos_method$_ungrouped$SBLockScreenDateViewController$MCSxOffset(_LOGOS_SELF_TYPE_NORMAL SBLockScreenDateViewController* _LOGOS_SELF_CONST, SEL); static float _logos_method$_ungrouped$SBLockScreenDateViewController$MCSyOffset(_LOGOS_SELF_TYPE_NORMAL SBLockScreenDateViewController* _LOGOS_SELF_CONST, SEL); static void (*_logos_orig$_ungrouped$SparkAlwaysOnController$setScreenIsOn$withForceShow$)(_LOGOS_SELF_TYPE_NORMAL SparkAlwaysOnController* _LOGOS_SELF_CONST, SEL, _Bool, _Bool); static void _logos_method$_ungrouped$SparkAlwaysOnController$setScreenIsOn$withForceShow$(_LOGOS_SELF_TYPE_NORMAL SparkAlwaysOnController* _LOGOS_SELF_CONST, SEL, _Bool, _Bool); 
 
-#line 35 "Tweak.xm"
-
-
-
-static void _logos_method$_ungrouped$SBFLockScreenDateView$updateFormat(_LOGOS_SELF_TYPE_NORMAL SBFLockScreenDateView* _LOGOS_SELF_CONST __unused self, SEL __unused _cmd){
-    [self addSubview:splashLabel];
-    NSDictionary *prefs = [[NSUserDefaults standardUserDefaults] persistentDomainForName:@"com.samgisaninja.mcsplashprefs"];
-    if ([[prefs objectForKey:@"hideDate"] boolValue]) {
-        SBFLockScreenDateSubtitleDateView *dateView = MSHookIvar<SBFLockScreenDateSubtitleDateView *>(self, "_dateSubtitleView");
-        [dateView setHidden:TRUE];
-    } else {
-        SBFLockScreenDateSubtitleDateView *dateView = MSHookIvar<SBFLockScreenDateSubtitleDateView *>(self, "_dateSubtitleView");
-        [dateView setHidden:FALSE];
-    }
-    if ([[prefs objectForKey:@"hideTime"] boolValue]) {
-        SBUILegibilityLabel *timeView = MSHookIvar<SBUILegibilityLabel *>(self, "_timeLabel");
-        [timeView setHidden:TRUE];
-    } else {
-        SBUILegibilityLabel *timeView = MSHookIvar<SBUILegibilityLabel *>(self, "_timeLabel");
-        [timeView setHidden:FALSE];
-    }
-    _logos_orig$_ungrouped$SBFLockScreenDateView$updateFormat(self, _cmd);
-}
-
-
-
+#line 25 "Tweak.xm"
 
 
 static void _logos_method$_ungrouped$SBLockScreenDateViewController$viewDidLoad(_LOGOS_SELF_TYPE_NORMAL SBLockScreenDateViewController* _LOGOS_SELF_CONST __unused self, SEL __unused _cmd){
-    NSLog(@"NSLOGIFY: viewDidLoad!");
+    NSDictionary *prefs = [[NSUserDefaults standardUserDefaults] persistentDomainForName:@"com.samgisaninja.mcsplashprefs"];
     if (!splashLabel) {
-        NSDictionary *prefs = [[NSUserDefaults standardUserDefaults] persistentDomainForName:@"com.samgisaninja.mcsplashprefs"];
         splashLabel = [[UILabel alloc] initWithFrame:CGRectMake([self MCSxOffset], [self MCSyOffset], 300, 20)];
         if ([[prefs objectForKey:@"splashSide"] isEqual:@(0)]) {
             [splashLabel setTransform:CGAffineTransformMakeRotation(7 * -M_PI / 4)];
@@ -139,10 +103,8 @@ static void _logos_method$_ungrouped$SBLockScreenDateViewController$viewDidLoad(
     	    [splashLabel setBackgroundColor:[UIColor clearColor]];
             [splashLabel setText:text];
         }
-    NSDictionary *prefs = [[NSUserDefaults standardUserDefaults] persistentDomainForName:@"com.samgisaninja.mcsplashprefs"];
     if ([[prefs objectForKey:@"enableAnimations"] boolValue]) {
         if (!growTimer) {
-            NSLog(@"NSLOGIFY: Created timers!");
             growTimer = [NSTimer scheduledTimerWithTimeInterval:0.5 target:self selector:@selector(MCSGrowLabel) userInfo:nil repeats:TRUE];
             delayShrinkTimer = [NSTimer scheduledTimerWithTimeInterval:0.25 target:self selector:@selector(MCSCreateShrinkTimer) userInfo:nil repeats:TRUE];
         }
@@ -184,6 +146,22 @@ static void _logos_method$_ungrouped$SBLockScreenDateViewController$viewDidAppea
         } completion:^(BOOL finished) {
             [splashLabel sizeToFit];
         }];
+    [[self view] addSubview:splashLabel];
+    NSDictionary *prefs = [[NSUserDefaults standardUserDefaults] persistentDomainForName:@"com.samgisaninja.mcsplashprefs"];
+    if ([[prefs objectForKey:@"hideDate"] boolValue]) {
+        SBFLockScreenDateSubtitleDateView *dateView = MSHookIvar<SBFLockScreenDateSubtitleDateView *>([self view], "_dateSubtitleView");
+        [dateView setHidden:TRUE];
+    } else {
+        SBFLockScreenDateSubtitleDateView *dateView = MSHookIvar<SBFLockScreenDateSubtitleDateView *>([self view], "_dateSubtitleView");
+        [dateView setHidden:FALSE];
+    }
+    if ([[prefs objectForKey:@"hideTime"] boolValue]) {
+        SBUILegibilityLabel *timeView = MSHookIvar<SBUILegibilityLabel *>([self view], "_timeLabel");
+        [timeView setHidden:TRUE];
+    } else {
+        SBUILegibilityLabel *timeView = MSHookIvar<SBUILegibilityLabel *>([self view], "_timeLabel");
+        [timeView setHidden:FALSE];
+    }
     _logos_orig$_ungrouped$SBLockScreenDateViewController$viewDidAppear$(self, _cmd, animated);
 }
 
@@ -203,7 +181,6 @@ static void _logos_method$_ungrouped$SBLockScreenDateViewController$MCSCreateShr
 
 
 static void _logos_method$_ungrouped$SBLockScreenDateViewController$MCSGrowLabel(_LOGOS_SELF_TYPE_NORMAL SBLockScreenDateViewController* _LOGOS_SELF_CONST __unused self, SEL __unused _cmd){
-    NSLog(@"NSLOGIFY: grow!");
     [UIView animateWithDuration:0.25 animations:^{
         [splashLabel setTransform:CGAffineTransformScale([splashLabel transform], 1.25, 1.25)];
         [splashLabel setCenter:[splashLabel center]];
@@ -214,7 +191,6 @@ static void _logos_method$_ungrouped$SBLockScreenDateViewController$MCSGrowLabel
 
 
 static void _logos_method$_ungrouped$SBLockScreenDateViewController$MCSShrinkLabel(_LOGOS_SELF_TYPE_NORMAL SBLockScreenDateViewController* _LOGOS_SELF_CONST __unused self, SEL __unused _cmd){
-    NSLog(@"NSLOGIFY: shrink!");
     [UIView animateWithDuration:0.25 animations:^{
         [splashLabel setTransform:CGAffineTransformScale([splashLabel transform], 0.8, 0.8)];
         [splashLabel setCenter:[splashLabel center]];
@@ -262,19 +238,6 @@ static float _logos_method$_ungrouped$SBLockScreenDateViewController$MCSyOffset(
 
 static void _logos_method$_ungrouped$SparkAlwaysOnController$setScreenIsOn$withForceShow$(_LOGOS_SELF_TYPE_NORMAL SparkAlwaysOnController* _LOGOS_SELF_CONST __unused self, SEL __unused _cmd, _Bool arg1, _Bool arg2){
     if (arg1){
-        if (!splashLabel) {
-    	    splashLabel = [[UILabel alloc] initWithFrame:CGRectMake(100, 100, 300, 20)];
-    	    [splashLabel setBackgroundColor:[UIColor clearColor]];
-            [splashLabel setTransform:CGAffineTransformMakeRotation(-M_PI / 4)];
-            NSData *fontData = [NSData dataWithContentsOfFile:@"/Library/Application Support/mcsplash/minecraft.ttf"];
-            CGDataProviderRef provider = CGDataProviderCreateWithCFData((CFDataRef)fontData);
-            CGFontRef font = CGFontCreateWithDataProvider(provider);
-            CTFontManagerRegisterGraphicsFont(font, nil);
-            CFRelease(font);
-            CFRelease(provider);
-            [splashLabel setFont:[UIFont fontWithName:@"minecraft" size:11]];
-            [splashLabel sizeToFit];
-	    }
         NSArray *allSplashes = [NSArray arrayWithContentsOfFile:@"/Library/Application Support/mcsplash/splashes.plist"];
         NSUInteger randInx = arc4random() % [allSplashes count];
         NSString *text = [allSplashes objectAtIndex:(unsigned long)randInx];
@@ -309,19 +272,63 @@ static void _logos_method$_ungrouped$SparkAlwaysOnController$setScreenIsOn$withF
 
 
 
-static __attribute__((constructor)) void _logosLocalCtor_abe821c7(int __unused argc, char __unused **argv, char __unused **envp){
+static __attribute__((constructor)) void _logosLocalCtor_573cf351(int __unused argc, char __unused **argv, char __unused **envp){
     NSDictionary *prefs = [[NSUserDefaults standardUserDefaults] persistentDomainForName:@"com.samgisaninja.mcsplashprefs"];
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    BOOL firstLoad = FALSE;
+    NSMutableDictionary *mutablePrefs = [[NSMutableDictionary alloc] init];
     if (!prefs) {
-        NSMutableDictionary *mutablePrefs = [[NSMutableDictionary alloc] init];
         [mutablePrefs setObject:@TRUE forKey:@"isEnabled"];
         [mutablePrefs setObject:@TRUE forKey:@"enableAnimations"];
         [mutablePrefs setObject:@FALSE forKey:@"hideTime"];
         [mutablePrefs setObject:@FALSE forKey:@"hideDate"];
         [mutablePrefs setObject:@FALSE forKey:@"hypShow"];
         [mutablePrefs setObject:@(1) forKey:@"splashSide"];
-        prefs = [NSDictionary dictionaryWithDictionary:mutablePrefs];
+        [mutablePrefs setObject:@TRUE forKey:@"blockAFont"];
+        [mutablePrefs setObject:@(0) forKey:@"xOff"];
+        [mutablePrefs setObject:@(0) forKey:@"yOff"];
+        [defaults setPersistentDomain:mutablePrefs forName:@"com.samgisaninja.mcsplashprefs"];
+        firstLoad = TRUE;
+    } else {
+        if (![[prefs allKeys] containsObject:@"isEnabled"]){
+            [mutablePrefs setObject:@TRUE forKey:@"isEnabled"];
+            [defaults setPersistentDomain:mutablePrefs forName:@"com.samgisaninja.mcsplashprefs"];
+            firstLoad = TRUE;
+        }
+        if (![[prefs allKeys] containsObject:@"enableAnimations"]){
+            [mutablePrefs setObject:@TRUE forKey:@"enableAnimations"];
+            [defaults setPersistentDomain:mutablePrefs forName:@"com.samgisaninja.mcsplashprefs"];
+        }
+        if (![[prefs allKeys] containsObject:@"hideTime"]){
+            [mutablePrefs setObject:@FALSE forKey:@"hideTime"];
+            [defaults setPersistentDomain:mutablePrefs forName:@"com.samgisaninja.mcsplashprefs"];
+        }
+        if (![[prefs allKeys] containsObject:@"hideDate"]){
+            [mutablePrefs setObject:@FALSE forKey:@"hideDate"];
+            [defaults setPersistentDomain:mutablePrefs forName:@"com.samgisaninja.mcsplashprefs"];
+        }
+        if (![[prefs allKeys] containsObject:@"hypShow"]){
+            [mutablePrefs setObject:@FALSE forKey:@"hypShow"];
+            [defaults setPersistentDomain:mutablePrefs forName:@"com.samgisaninja.mcsplashprefs"];
+        }
+        if (![[prefs allKeys] containsObject:@"splashSide"]){
+            [mutablePrefs setObject:@(1) forKey:@"splashSide"];
+            [defaults setPersistentDomain:mutablePrefs forName:@"com.samgisaninja.mcsplashprefs"];
+        }
+        if (![[prefs allKeys] containsObject:@"blockAFont"]){
+            [mutablePrefs setObject:@TRUE forKey:@"blockAFont"];
+            [defaults setPersistentDomain:mutablePrefs forName:@"com.samgisaninja.mcsplashprefs"];
+        }
+        if (![[prefs allKeys] containsObject:@"xOff"]){
+            [mutablePrefs setObject:@(0) forKey:@"xOff"];
+            [defaults setPersistentDomain:mutablePrefs forName:@"com.samgisaninja.mcsplashprefs"];
+        }
+        if (![[prefs allKeys] containsObject:@"yOff"]){
+            [mutablePrefs setObject:@(0) forKey:@"yOff"];
+            [defaults setPersistentDomain:mutablePrefs forName:@"com.samgisaninja.mcsplashprefs"];
+        }
     }
-    if ([[prefs objectForKey:@"isEnabled"] boolValue]) {
-        {Class _logos_class$_ungrouped$SBFLockScreenDateView = objc_getClass("SBFLockScreenDateView"); MSHookMessageEx(_logos_class$_ungrouped$SBFLockScreenDateView, @selector(updateFormat), (IMP)&_logos_method$_ungrouped$SBFLockScreenDateView$updateFormat, (IMP*)&_logos_orig$_ungrouped$SBFLockScreenDateView$updateFormat);Class _logos_class$_ungrouped$SBLockScreenDateViewController = objc_getClass("SBLockScreenDateViewController"); MSHookMessageEx(_logos_class$_ungrouped$SBLockScreenDateViewController, @selector(viewDidLoad), (IMP)&_logos_method$_ungrouped$SBLockScreenDateViewController$viewDidLoad, (IMP*)&_logos_orig$_ungrouped$SBLockScreenDateViewController$viewDidLoad);MSHookMessageEx(_logos_class$_ungrouped$SBLockScreenDateViewController, @selector(viewDidAppear:), (IMP)&_logos_method$_ungrouped$SBLockScreenDateViewController$viewDidAppear$, (IMP*)&_logos_orig$_ungrouped$SBLockScreenDateViewController$viewDidAppear$);{ char _typeEncoding[1024]; unsigned int i = 0; _typeEncoding[i] = 'v'; i += 1; _typeEncoding[i] = '@'; i += 1; _typeEncoding[i] = ':'; i += 1; _typeEncoding[i] = '\0'; class_addMethod(_logos_class$_ungrouped$SBLockScreenDateViewController, @selector(MCSCreateShrinkTimer), (IMP)&_logos_method$_ungrouped$SBLockScreenDateViewController$MCSCreateShrinkTimer, _typeEncoding); }{ char _typeEncoding[1024]; unsigned int i = 0; _typeEncoding[i] = 'v'; i += 1; _typeEncoding[i] = '@'; i += 1; _typeEncoding[i] = ':'; i += 1; _typeEncoding[i] = '\0'; class_addMethod(_logos_class$_ungrouped$SBLockScreenDateViewController, @selector(MCSGrowLabel), (IMP)&_logos_method$_ungrouped$SBLockScreenDateViewController$MCSGrowLabel, _typeEncoding); }{ char _typeEncoding[1024]; unsigned int i = 0; _typeEncoding[i] = 'v'; i += 1; _typeEncoding[i] = '@'; i += 1; _typeEncoding[i] = ':'; i += 1; _typeEncoding[i] = '\0'; class_addMethod(_logos_class$_ungrouped$SBLockScreenDateViewController, @selector(MCSShrinkLabel), (IMP)&_logos_method$_ungrouped$SBLockScreenDateViewController$MCSShrinkLabel, _typeEncoding); }{ char _typeEncoding[1024]; unsigned int i = 0; _typeEncoding[i] = 'f'; i += 1; _typeEncoding[i] = '@'; i += 1; _typeEncoding[i] = ':'; i += 1; _typeEncoding[i] = '\0'; class_addMethod(_logos_class$_ungrouped$SBLockScreenDateViewController, @selector(MCSxOffset), (IMP)&_logos_method$_ungrouped$SBLockScreenDateViewController$MCSxOffset, _typeEncoding); }{ char _typeEncoding[1024]; unsigned int i = 0; _typeEncoding[i] = 'f'; i += 1; _typeEncoding[i] = '@'; i += 1; _typeEncoding[i] = ':'; i += 1; _typeEncoding[i] = '\0'; class_addMethod(_logos_class$_ungrouped$SBLockScreenDateViewController, @selector(MCSyOffset), (IMP)&_logos_method$_ungrouped$SBLockScreenDateViewController$MCSyOffset, _typeEncoding); }Class _logos_class$_ungrouped$SparkAlwaysOnController = objc_getClass("SparkAlwaysOnController"); MSHookMessageEx(_logos_class$_ungrouped$SparkAlwaysOnController, @selector(setScreenIsOn:withForceShow:), (IMP)&_logos_method$_ungrouped$SparkAlwaysOnController$setScreenIsOn$withForceShow$, (IMP*)&_logos_orig$_ungrouped$SparkAlwaysOnController$setScreenIsOn$withForceShow$);}
+    if ([[prefs objectForKey:@"isEnabled"] boolValue] || firstLoad) {
+        {Class _logos_class$_ungrouped$SBLockScreenDateViewController = objc_getClass("SBLockScreenDateViewController"); MSHookMessageEx(_logos_class$_ungrouped$SBLockScreenDateViewController, @selector(viewDidLoad), (IMP)&_logos_method$_ungrouped$SBLockScreenDateViewController$viewDidLoad, (IMP*)&_logos_orig$_ungrouped$SBLockScreenDateViewController$viewDidLoad);MSHookMessageEx(_logos_class$_ungrouped$SBLockScreenDateViewController, @selector(viewDidAppear:), (IMP)&_logos_method$_ungrouped$SBLockScreenDateViewController$viewDidAppear$, (IMP*)&_logos_orig$_ungrouped$SBLockScreenDateViewController$viewDidAppear$);{ char _typeEncoding[1024]; unsigned int i = 0; _typeEncoding[i] = 'v'; i += 1; _typeEncoding[i] = '@'; i += 1; _typeEncoding[i] = ':'; i += 1; _typeEncoding[i] = '\0'; class_addMethod(_logos_class$_ungrouped$SBLockScreenDateViewController, @selector(MCSCreateShrinkTimer), (IMP)&_logos_method$_ungrouped$SBLockScreenDateViewController$MCSCreateShrinkTimer, _typeEncoding); }{ char _typeEncoding[1024]; unsigned int i = 0; _typeEncoding[i] = 'v'; i += 1; _typeEncoding[i] = '@'; i += 1; _typeEncoding[i] = ':'; i += 1; _typeEncoding[i] = '\0'; class_addMethod(_logos_class$_ungrouped$SBLockScreenDateViewController, @selector(MCSGrowLabel), (IMP)&_logos_method$_ungrouped$SBLockScreenDateViewController$MCSGrowLabel, _typeEncoding); }{ char _typeEncoding[1024]; unsigned int i = 0; _typeEncoding[i] = 'v'; i += 1; _typeEncoding[i] = '@'; i += 1; _typeEncoding[i] = ':'; i += 1; _typeEncoding[i] = '\0'; class_addMethod(_logos_class$_ungrouped$SBLockScreenDateViewController, @selector(MCSShrinkLabel), (IMP)&_logos_method$_ungrouped$SBLockScreenDateViewController$MCSShrinkLabel, _typeEncoding); }{ char _typeEncoding[1024]; unsigned int i = 0; _typeEncoding[i] = 'f'; i += 1; _typeEncoding[i] = '@'; i += 1; _typeEncoding[i] = ':'; i += 1; _typeEncoding[i] = '\0'; class_addMethod(_logos_class$_ungrouped$SBLockScreenDateViewController, @selector(MCSxOffset), (IMP)&_logos_method$_ungrouped$SBLockScreenDateViewController$MCSxOffset, _typeEncoding); }{ char _typeEncoding[1024]; unsigned int i = 0; _typeEncoding[i] = 'f'; i += 1; _typeEncoding[i] = '@'; i += 1; _typeEncoding[i] = ':'; i += 1; _typeEncoding[i] = '\0'; class_addMethod(_logos_class$_ungrouped$SBLockScreenDateViewController, @selector(MCSyOffset), (IMP)&_logos_method$_ungrouped$SBLockScreenDateViewController$MCSyOffset, _typeEncoding); }Class _logos_class$_ungrouped$SparkAlwaysOnController = objc_getClass("SparkAlwaysOnController"); MSHookMessageEx(_logos_class$_ungrouped$SparkAlwaysOnController, @selector(setScreenIsOn:withForceShow:), (IMP)&_logos_method$_ungrouped$SparkAlwaysOnController$setScreenIsOn$withForceShow$, (IMP*)&_logos_orig$_ungrouped$SparkAlwaysOnController$setScreenIsOn$withForceShow$);}
     }
 }
