@@ -44,7 +44,7 @@ NSTimer *delayShrinkTimer;
 #define _LOGOS_RETURN_RETAINED
 #endif
 
-@class SparkAlwaysOnController; @class SBLockScreenDateViewController; 
+@class SBLockScreenDateViewController; @class SparkAlwaysOnController; 
 static void (*_logos_orig$_ungrouped$SBLockScreenDateViewController$viewDidLoad)(_LOGOS_SELF_TYPE_NORMAL SBLockScreenDateViewController* _LOGOS_SELF_CONST, SEL); static void _logos_method$_ungrouped$SBLockScreenDateViewController$viewDidLoad(_LOGOS_SELF_TYPE_NORMAL SBLockScreenDateViewController* _LOGOS_SELF_CONST, SEL); static void (*_logos_orig$_ungrouped$SBLockScreenDateViewController$viewDidAppear$)(_LOGOS_SELF_TYPE_NORMAL SBLockScreenDateViewController* _LOGOS_SELF_CONST, SEL, BOOL); static void _logos_method$_ungrouped$SBLockScreenDateViewController$viewDidAppear$(_LOGOS_SELF_TYPE_NORMAL SBLockScreenDateViewController* _LOGOS_SELF_CONST, SEL, BOOL); static void _logos_method$_ungrouped$SBLockScreenDateViewController$MCSCreateShrinkTimer(_LOGOS_SELF_TYPE_NORMAL SBLockScreenDateViewController* _LOGOS_SELF_CONST, SEL); static void _logos_method$_ungrouped$SBLockScreenDateViewController$MCSGrowLabel(_LOGOS_SELF_TYPE_NORMAL SBLockScreenDateViewController* _LOGOS_SELF_CONST, SEL); static void _logos_method$_ungrouped$SBLockScreenDateViewController$MCSShrinkLabel(_LOGOS_SELF_TYPE_NORMAL SBLockScreenDateViewController* _LOGOS_SELF_CONST, SEL); static float _logos_method$_ungrouped$SBLockScreenDateViewController$MCSxOffset(_LOGOS_SELF_TYPE_NORMAL SBLockScreenDateViewController* _LOGOS_SELF_CONST, SEL); static float _logos_method$_ungrouped$SBLockScreenDateViewController$MCSyOffset(_LOGOS_SELF_TYPE_NORMAL SBLockScreenDateViewController* _LOGOS_SELF_CONST, SEL); static void (*_logos_orig$_ungrouped$SparkAlwaysOnController$setScreenIsOn$withForceShow$)(_LOGOS_SELF_TYPE_NORMAL SparkAlwaysOnController* _LOGOS_SELF_CONST, SEL, _Bool, _Bool); static void _logos_method$_ungrouped$SparkAlwaysOnController$setScreenIsOn$withForceShow$(_LOGOS_SELF_TYPE_NORMAL SparkAlwaysOnController* _LOGOS_SELF_CONST, SEL, _Bool, _Bool); 
 
 #line 25 "Tweak.xm"
@@ -59,7 +59,7 @@ static void _logos_method$_ungrouped$SBLockScreenDateViewController$viewDidLoad(
         } else {
             [splashLabel setTransform:CGAffineTransformMakeRotation(-M_PI / 4)];            
         }
-        NSData *fontData = [NSData dataWithContentsOfFile:@"/Library/Application Support/mcsplash/minecraft.ttf"];
+        NSData *fontData = [NSData dataWithContentsOfFile:@"/Library/Application Support/mcsplash/minecraft.otf"];
         CGDataProviderRef provider = CGDataProviderCreateWithCFData((CFDataRef)fontData);
         CGFontRef font = CGFontCreateWithDataProvider(provider);
         CTFontManagerRegisterGraphicsFont(font, nil);

@@ -59,7 +59,7 @@ static void _logos_method$_ungrouped$SBLockScreenDateViewController$viewDidLoad(
         } else {
             [splashLabel setTransform:CGAffineTransformMakeRotation(-M_PI / 4)];            
         }
-        NSData *fontData = [NSData dataWithContentsOfFile:@"/Library/Application Support/mcsplash/minecraft.ttf"];
+        NSData *fontData = [NSData dataWithContentsOfFile:@"/Library/Application Support/mcsplash/minecraft.otf"];
         CGDataProviderRef provider = CGDataProviderCreateWithCFData((CFDataRef)fontData);
         CGFontRef font = CGFontCreateWithDataProvider(provider);
         CTFontManagerRegisterGraphicsFont(font, nil);
