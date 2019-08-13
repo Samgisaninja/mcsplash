@@ -28,11 +28,7 @@ NSTimer *delayShrinkTimer;
     NSDictionary *prefs = [[NSUserDefaults standardUserDefaults] persistentDomainForName:@"com.samgisaninja.mcsplashprefs"];
     if (!splashLabel) {
         splashLabel = [[UILabel alloc] initWithFrame:CGRectMake([self MCSxOffset], [self MCSyOffset], 300, 20)];
-        if ([[prefs objectForKey:@"splashSide"] isEqual:@(0)]) {
-            [splashLabel setTransform:CGAffineTransformMakeRotation(7 * -M_PI / 4)];
-        } else {
-            [splashLabel setTransform:CGAffineTransformMakeRotation(-M_PI / 4)];            
-        }
+        [splashLabel setTransform:CGAffineTransformMakeRotation([[prefs objectForKey:@"rotation"] intValue] * -M_PI / 180)];
         NSData *fontData = [NSData dataWithContentsOfFile:@"/Library/Application Support/mcsplash/minecraft.otf"];
         CGDataProviderRef provider = CGDataProviderCreateWithCFData((CFDataRef)fontData);
         CGFontRef font = CGFontCreateWithDataProvider(provider);
@@ -300,6 +296,16 @@ NSTimer *delayShrinkTimer;
         if (![[prefs allKeys] containsObject:@"yOff"]){
             [mutablePrefs setObject:@(0) forKey:@"yOff"];
             [defaults setPersistentDomain:mutablePrefs forName:@"com.samgisaninja.mcsplashprefs"];
+        }
+        if (![[prefs allKeys] containsObject:@"rotation"]){
+            if ([[prefs objectForKey:@"splashSide"] isEqual:@(1)]) {
+                [mutablePrefs setObject:[NSNumber numberWithInt:20] forKey:@"rotation"];
+                [defaults setPersistentDomain:mutablePrefs forName:@"com.samgisaninja.mcsplashprefs"];
+            } else {
+                [mutablePrefs setObject:[NSNumber numberWithInt:-20] forKey:@"rotation"];
+                [defaults setPersistentDomain:mutablePrefs forName:@"com.samgisaninja.mcsplashprefs"];
+            }
+            
         }
     }
     if ([[prefs objectForKey:@"isEnabled"] boolValue] || firstLoad) {

@@ -44,7 +44,7 @@ NSTimer *delayShrinkTimer;
 #define _LOGOS_RETURN_RETAINED
 #endif
 
-@class SparkAlwaysOnController; @class SBLockScreenDateViewController; 
+@class SBLockScreenDateViewController; @class SparkAlwaysOnController; 
 static void (*_logos_orig$_ungrouped$SBLockScreenDateViewController$viewDidLoad)(_LOGOS_SELF_TYPE_NORMAL SBLockScreenDateViewController* _LOGOS_SELF_CONST, SEL); static void _logos_method$_ungrouped$SBLockScreenDateViewController$viewDidLoad(_LOGOS_SELF_TYPE_NORMAL SBLockScreenDateViewController* _LOGOS_SELF_CONST, SEL); static void (*_logos_orig$_ungrouped$SBLockScreenDateViewController$viewDidAppear$)(_LOGOS_SELF_TYPE_NORMAL SBLockScreenDateViewController* _LOGOS_SELF_CONST, SEL, BOOL); static void _logos_method$_ungrouped$SBLockScreenDateViewController$viewDidAppear$(_LOGOS_SELF_TYPE_NORMAL SBLockScreenDateViewController* _LOGOS_SELF_CONST, SEL, BOOL); static void _logos_method$_ungrouped$SBLockScreenDateViewController$MCSCreateShrinkTimer(_LOGOS_SELF_TYPE_NORMAL SBLockScreenDateViewController* _LOGOS_SELF_CONST, SEL); static void _logos_method$_ungrouped$SBLockScreenDateViewController$MCSGrowLabel(_LOGOS_SELF_TYPE_NORMAL SBLockScreenDateViewController* _LOGOS_SELF_CONST, SEL); static void _logos_method$_ungrouped$SBLockScreenDateViewController$MCSShrinkLabel(_LOGOS_SELF_TYPE_NORMAL SBLockScreenDateViewController* _LOGOS_SELF_CONST, SEL); static float _logos_method$_ungrouped$SBLockScreenDateViewController$MCSxOffset(_LOGOS_SELF_TYPE_NORMAL SBLockScreenDateViewController* _LOGOS_SELF_CONST, SEL); static float _logos_method$_ungrouped$SBLockScreenDateViewController$MCSyOffset(_LOGOS_SELF_TYPE_NORMAL SBLockScreenDateViewController* _LOGOS_SELF_CONST, SEL); static void (*_logos_orig$_ungrouped$SparkAlwaysOnController$setScreenIsOn$withForceShow$)(_LOGOS_SELF_TYPE_NORMAL SparkAlwaysOnController* _LOGOS_SELF_CONST, SEL, _Bool, _Bool); static void _logos_method$_ungrouped$SparkAlwaysOnController$setScreenIsOn$withForceShow$(_LOGOS_SELF_TYPE_NORMAL SparkAlwaysOnController* _LOGOS_SELF_CONST, SEL, _Bool, _Bool); 
 
 #line 25 "Tweak.xm"
@@ -54,11 +54,7 @@ static void _logos_method$_ungrouped$SBLockScreenDateViewController$viewDidLoad(
     NSDictionary *prefs = [[NSUserDefaults standardUserDefaults] persistentDomainForName:@"com.samgisaninja.mcsplashprefs"];
     if (!splashLabel) {
         splashLabel = [[UILabel alloc] initWithFrame:CGRectMake([self MCSxOffset], [self MCSyOffset], 300, 20)];
-        if ([[prefs objectForKey:@"splashSide"] isEqual:@(0)]) {
-            [splashLabel setTransform:CGAffineTransformMakeRotation(7 * -M_PI / 4)];
-        } else {
-            [splashLabel setTransform:CGAffineTransformMakeRotation(-M_PI / 4)];            
-        }
+        [splashLabel setTransform:CGAffineTransformMakeRotation([[prefs objectForKey:@"rotation"] intValue] * -M_PI / 180)];
         NSData *fontData = [NSData dataWithContentsOfFile:@"/Library/Application Support/mcsplash/minecraft.otf"];
         CGDataProviderRef provider = CGDataProviderCreateWithCFData((CFDataRef)fontData);
         CGFontRef font = CGFontCreateWithDataProvider(provider);
@@ -272,7 +268,7 @@ static void _logos_method$_ungrouped$SparkAlwaysOnController$setScreenIsOn$withF
 
 
 
-static __attribute__((constructor)) void _logosLocalCtor_573cf351(int __unused argc, char __unused **argv, char __unused **envp){
+static __attribute__((constructor)) void _logosLocalCtor_512676bf(int __unused argc, char __unused **argv, char __unused **envp){
     NSDictionary *prefs = [[NSUserDefaults standardUserDefaults] persistentDomainForName:@"com.samgisaninja.mcsplashprefs"];
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
     BOOL firstLoad = FALSE;
@@ -326,6 +322,16 @@ static __attribute__((constructor)) void _logosLocalCtor_573cf351(int __unused a
         if (![[prefs allKeys] containsObject:@"yOff"]){
             [mutablePrefs setObject:@(0) forKey:@"yOff"];
             [defaults setPersistentDomain:mutablePrefs forName:@"com.samgisaninja.mcsplashprefs"];
+        }
+        if (![[prefs allKeys] containsObject:@"rotation"]){
+            if ([[prefs objectForKey:@"splashSide"] isEqual:@(1)]) {
+                [mutablePrefs setObject:[NSNumber numberWithInt:20] forKey:@"rotation"];
+                [defaults setPersistentDomain:mutablePrefs forName:@"com.samgisaninja.mcsplashprefs"];
+            } else {
+                [mutablePrefs setObject:[NSNumber numberWithInt:-20] forKey:@"rotation"];
+                [defaults setPersistentDomain:mutablePrefs forName:@"com.samgisaninja.mcsplashprefs"];
+            }
+            
         }
     }
     if ([[prefs objectForKey:@"isEnabled"] boolValue] || firstLoad) {
