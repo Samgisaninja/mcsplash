@@ -1,6 +1,6 @@
 Package: com.samgisaninja.mcsplash
 Name: Bedrock
-Depends: mobilesubstrate, preferenceloader
+Depends: mobilesubstrate, preferenceloader, ws.hbang.common
 Version: 1.0.4
 Architecture: iphoneos-arm
 Description: Minecraft splashes on your lock screen

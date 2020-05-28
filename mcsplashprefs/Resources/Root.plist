@@ -69,6 +69,8 @@
 			<string>isEnabled</string>
 			<key>label</key>
 			<string>Enable</string>
+			<key>PostNotification</key>
+			<string>com.samgisaninja.mcsplashprefs/ReloadPrefs</string>
 		</dict>
 		<dict>
 			<key>cell</key>
@@ -87,6 +89,8 @@
 			<string>enableAnimations</string>
 			<key>label</key>
 			<string>Enable Animations</string>
+			<key>PostNotification</key>
+			<string>com.samgisaninja.mcsplashprefs/ReloadPrefs</string>
 		</dict>
 		<dict>
 			<key>cell</key>
@@ -107,6 +111,8 @@
 				<string>Left</string>
 				<string>Right</string>
 			</array>
+			<key>PostNotification</key>
+			<string>com.samgisaninja.mcsplashprefs/ReloadPrefs</string>
 		</dict>
 		<dict>
 			<key>cell</key>
@@ -131,6 +137,8 @@
 			<integer>300</integer>
 			<key>showValue</key>
 			<true/>
+			<key>PostNotification</key>
+			<string>com.samgisaninja.mcsplashprefs/ReloadPrefs</string>
 		</dict>
 		<dict>
 			<key>cell</key>
@@ -153,6 +161,8 @@
 			<string>Save</string>
 			<key>cancelTitle</key>
 			<string>Cancel</string>
+			<key>PostNotification</key>
+			<string>com.samgisaninja.mcsplashprefs/ReloadPrefs</string>
 		</dict>
 		<dict>
 			<key>cell</key>
@@ -177,6 +187,8 @@
 			<integer>300</integer>
 			<key>showValue</key>
 			<true/>
+			<key>PostNotification</key>
+			<string>com.samgisaninja.mcsplashprefs/ReloadPrefs</string>
 		</dict>
 		<dict>
 			<key>cell</key>
@@ -199,6 +211,8 @@
 			<string>Save</string>
 			<key>cancelTitle</key>
 			<string>Cancel</string>
+			<key>PostNotification</key>
+			<string>com.samgisaninja.mcsplashprefs/ReloadPrefs</string>
 		</dict>
 		<dict>
 			<key>cell</key>
@@ -207,6 +221,30 @@
 			<string>Rotation (degrees)</string>
 			<key>footerText</key>
 			<string>Swipe back to dismiss keyboard</string>
+		</dict>
+		<dict>
+			<key>cell</key>
+			<string>PSEditTextCell</string>
+			<key>default</key>
+			<integer>0</integer>
+			<key>defaults</key>
+			<string>com.samgisaninja.mcsplashprefs</string>
+			<key>key</key>
+			<string>rotation</string>
+			<key>label</key>
+			<string>Enter value manually</string>
+			<key>placeholder</key>
+			<string>0</string>
+			<key>isDecimalPad</key>
+			<true/>
+			<key>prompt</key>
+			<string>Enter rotation value</string>
+			<key>okTitle</key>
+			<string>Save</string>
+			<key>cancelTitle</key>
+			<string>Cancel</string>
+			<key>PostNotification</key>
+			<string>com.samgisaninja.mcsplashprefs/ReloadPrefs</string>
 		</dict>
 		<dict>
 			<key>cell</key>
@@ -226,25 +264,29 @@
 		</dict>
 		<dict>
 			<key>cell</key>
+			<string>PSGroupCell</string>
+			<key>label</key>
+			<string>Font Size</string>
+			<key>footerText</key>
+			<string>Swipe back to dismiss keyboard</string>
+			<key>PostNotification</key>
+			<string>com.samgisaninja.mcsplashprefs/ReloadPrefs</string>
+		</dict>
+		<dict>
+			<key>cell</key>
 			<string>PSEditTextCell</string>
 			<key>default</key>
-			<integer>0</integer>
+			<integer>11</integer>
 			<key>defaults</key>
 			<string>com.samgisaninja.mcsplashprefs</string>
 			<key>key</key>
-			<string>rotation</string>
-			<key>label</key>
-			<string>Enter value manually</string>
+			<string>textSize</string>
 			<key>placeholder</key>
-			<string>0</string>
+			<string>11</string>
 			<key>isDecimalPad</key>
 			<true/>
-			<key>prompt</key>
-			<string>Enter y offset value</string>
-			<key>okTitle</key>
-			<string>Save</string>
-			<key>cancelTitle</key>
-			<string>Cancel</string>
+			<key>PostNotification</key>
+			<string>com.samgisaninja.mcsplashprefs/ReloadPrefs</string>
 		</dict>
 		<dict>
 			<key>cell</key>
@@ -265,6 +307,8 @@
 			<string>hideTime</string>
 			<key>label</key>
 			<string>Hide time view</string>
+			<key>PostNotification</key>
+			<string>com.samgisaninja.mcsplashprefs/ReloadPrefs</string>
 		</dict>
 		<dict>
 			<key>cell</key>
@@ -277,6 +321,8 @@
 			<string>hideDate</string>
 			<key>label</key>
 			<string>Hide date view</string>
+			<key>PostNotification</key>
+			<string>com.samgisaninja.mcsplashprefs/ReloadPrefs</string>
 		</dict>
 		<dict>
 			<key>cell</key>
@@ -297,6 +343,8 @@
 			<string>hypShow</string>
 			<key>label</key>
 			<string>Show on Hyperion (SparkDev) Always On Display</string>
+			<key>PostNotification</key>
+			<string>com.samgisaninja.mcsplashprefs/ReloadPrefs</string>
 		</dict>
 		<dict>
 			<key>cell</key>
@@ -317,12 +365,14 @@
 			<string>blockAFont</string>
 			<key>label</key>
 			<string>Enable A-Font (BawAppie) compatibility</string>
+			<key>PostNotification</key>
+			<string>com.samgisaninja.mcsplashprefs/ReloadPrefs</string>
 		</dict>
 		<dict>
 			<key>cell</key>
 			<string>PSGroupCell</string>
 			<key>footerText</key>
-			<string>You may need to respring to fully apply changes</string>
+			<string>You don't need to respring to apply but here's a button anyway</string>
 			<key>isStaticText</key>
 			<true/>
 		</dict>

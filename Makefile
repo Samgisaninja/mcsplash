@@ -4,6 +4,7 @@ ARCHS = armv7 arm64 arm64e
 TWEAK_NAME = mcsplash
 mcsplash_FILES = Tweak.xm
 mcsplash__CFLAGS = -fobjc-arc
+mcsplash_EXTRA_FRAMEWORKS += Cephei
 
 include $(THEOS_MAKE_PATH)/tweak.mk
 

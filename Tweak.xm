@@ -1,4 +1,5 @@
 #include "CoreText/CTFontManager.h"
+#import <Cephei/HBPreferences.h>
 
 UILabel *splashLabel;
 NSTimer *shrinkTimer;
@@ -22,31 +23,36 @@ NSTimer *delayShrinkTimer;
 + (id)fontWithNameWithoutAFont:(NSString *)arg1 size:(double)arg2;
 @end
 
+
+BOOL isEnabled;
+BOOL enableAnimations;
+NSInteger splashSide;
+NSInteger xOff;
+NSInteger yOff;
+NSInteger rotation;
+NSInteger textSize;
+BOOL hideTime;
+BOOL hideDate;
+BOOL hypShow;
+BOOL blockAFont;
+
 %hook SBLockScreenDateViewController
 
 -(void)viewDidLoad{
     NSDictionary *prefs = [[NSUserDefaults standardUserDefaults] persistentDomainForName:@"com.samgisaninja.mcsplashprefs"];
     if (!splashLabel) {
         splashLabel = [[UILabel alloc] initWithFrame:CGRectMake([self MCSxOffset], [self MCSyOffset], 300, 20)];
-        [splashLabel setTransform:CGAffineTransformMakeRotation([[prefs objectForKey:@"rotation"] intValue] * -M_PI / 180)];
+        [splashLabel setTransform:CGAffineTransformMakeRotation(rotation * -M_PI / 180)];
         NSData *fontData = [NSData dataWithContentsOfFile:@"/Library/Application Support/mcsplash/minecraft.otf"];
         CGDataProviderRef provider = CGDataProviderCreateWithCFData((CFDataRef)fontData);
         CGFontRef font = CGFontCreateWithDataProvider(provider);
         CTFontManagerRegisterGraphicsFont(font, nil);
         CFRelease(font);
         CFRelease(provider);
-        if ([[NSFileManager defaultManager] fileExistsAtPath:@"/Library/MobileSubstrate/DynamicLibraries/AFont.dylib"]) {
-            if ([prefs objectForKey:@"blockAFont"]) {
-                if ([[prefs objectForKey:@"blockAFont"] boolValue]){
-                    [splashLabel setFont:[UIFont fontWithNameWithoutAFont:@"minecraft" size:11]];
-                } else {
-                    [splashLabel setFont:[UIFont fontWithName:@"minecraft" size:11]];
-                }
-            } else {
-                [splashLabel setFont:[UIFont fontWithNameWithoutAFont:@"minecraft" size:11]];
-            }
+        if ([[NSFileManager defaultManager] fileExistsAtPath:@"/Library/MobileSubstrate/DynamicLibraries/AFont.dylib"] && blockAFont) {
+            [splashLabel setFont:[UIFont fontWithNameWithoutAFont:@"minecraft" size:textSize]];
         } else {
-            [splashLabel setFont:[UIFont fontWithName:@"minecraft" size:11]];
+            [splashLabel setFont:[UIFont fontWithName:@"minecraft" size:textSize]];
         }
         [splashLabel sizeToFit];
 
@@ -73,7 +79,7 @@ NSTimer *delayShrinkTimer;
     	    [splashLabel setBackgroundColor:[UIColor clearColor]];
             [splashLabel setText:text];
         }
-    if ([[prefs objectForKey:@"enableAnimations"] boolValue]) {
+    if (enableAnimations) {
         if (!growTimer) {
             growTimer = [NSTimer scheduledTimerWithTimeInterval:0.5 target:self selector:@selector(MCSGrowLabel) userInfo:nil repeats:TRUE];
             delayShrinkTimer = [NSTimer scheduledTimerWithTimeInterval:0.25 target:self selector:@selector(MCSCreateShrinkTimer) userInfo:nil repeats:TRUE];
@@ -84,7 +90,6 @@ NSTimer *delayShrinkTimer;
             delayShrinkTimer = [NSTimer scheduledTimerWithTimeInterval:0.25 target:self selector:@selector(MCSCreateShrinkTimer) userInfo:nil repeats:FALSE];
         }
     }
-    
     %orig;
 }
 
@@ -118,14 +123,14 @@ NSTimer *delayShrinkTimer;
         }];
     [[self view] addSubview:splashLabel];
     NSDictionary *prefs = [[NSUserDefaults standardUserDefaults] persistentDomainForName:@"com.samgisaninja.mcsplashprefs"];
-    if ([[prefs objectForKey:@"hideDate"] boolValue]) {
+    if (hideDate) {
         SBFLockScreenDateSubtitleDateView *dateView = MSHookIvar<SBFLockScreenDateSubtitleDateView *>([self view], "_dateSubtitleView");
         [dateView setHidden:TRUE];
     } else {
         SBFLockScreenDateSubtitleDateView *dateView = MSHookIvar<SBFLockScreenDateSubtitleDateView *>([self view], "_dateSubtitleView");
         [dateView setHidden:FALSE];
     }
-    if ([[prefs objectForKey:@"hideTime"] boolValue]) {
+    if (hideTime) {
         SBUILegibilityLabel *timeView = MSHookIvar<SBUILegibilityLabel *>([self view], "_timeLabel");
         [timeView setHidden:TRUE];
     } else {
@@ -139,7 +144,7 @@ NSTimer *delayShrinkTimer;
 -(void)MCSCreateShrinkTimer{
     NSDictionary *prefs = [[NSUserDefaults standardUserDefaults] persistentDomainForName:@"com.samgisaninja.mcsplashprefs"];
     if (!shrinkTimer) {
-        if ([[prefs objectForKey:@"enableAnimations"] boolValue]) {
+        if (enableAnimations) {
             shrinkTimer = [NSTimer scheduledTimerWithTimeInterval:0.5 target:self selector:@selector(MCSShrinkLabel) userInfo:nil repeats:TRUE];
         } else {
             shrinkTimer = [NSTimer scheduledTimerWithTimeInterval:0.5 target:self selector:@selector(MCSShrinkLabel) userInfo:nil repeats:FALSE];
@@ -176,14 +181,14 @@ NSTimer *delayShrinkTimer;
 
     NSDictionary *prefs;
     prefs = [[NSUserDefaults standardUserDefaults] persistentDomainForName:@"com.samgisaninja.mcsplashprefs"];
-    if ([prefs objectForKey:@"xOff"]){
-        if ([[prefs objectForKey:@"splashSide"] isEqual:@(0)]) {
-            return [[prefs objectForKey:@"xOff"] floatValue] - deviceConst;
+    if (xOff){
+        if ([splashSide isEqual:@(0)]) {
+            return xOff - deviceConst;
         } else {
-            return [[prefs objectForKey:@"xOff"] floatValue] + deviceConst;
+            return xOff + deviceConst;
         }
     } else {
-        if ([[prefs objectForKey:@"splashSide"] isEqual:@(0)]) {
+        if ([splashSide isEqual:@(0)]) {
             return -deviceConst;
         } else {
             return deviceConst;
@@ -195,8 +200,8 @@ NSTimer *delayShrinkTimer;
 -(float)MCSyOffset{
     NSDictionary *prefs;
     prefs = [[NSUserDefaults standardUserDefaults] persistentDomainForName:@"com.samgisaninja.mcsplashprefs"];
-    if ([prefs objectForKey:@"yOff"]){
-        return [[prefs objectForKey:@"yOff"] floatValue]+ 100;
+    if (yOff){
+        return yOff + 100;
     } else {
         return 100;
     }
@@ -232,7 +237,7 @@ NSTimer *delayShrinkTimer;
         [splashLabel setHidden:FALSE];
     } else {
         NSDictionary *prefs = [[NSUserDefaults standardUserDefaults] persistentDomainForName:@"com.samgisaninja.mcsplashprefs"];
-        if (![[prefs objectForKey:@"hypShow"] boolValue]) {
+        if (!hypShow) {
             [splashLabel setHidden:TRUE];
         }
     }
@@ -243,6 +248,25 @@ NSTimer *delayShrinkTimer;
 
 
 %ctor{
+    HBPreferences *prefs = [[HBPreferences alloc] initWithIdentifier:@"com.samgisaninja.mcsplashprefs"];
+    [prefs registerBool:&isEnabled forKey:@"isEnabled"];
+    [prefs registerBool:&enableAnimations forKey:@"enableAnimations"];
+    [prefs registerInteger:&splashSide forKey:@"splashSide"];
+    [prefs registerInteger:&xOff forKey:@"xOff"];
+    [prefs registerInteger:&yOff forKey:@"yOff"];
+    [prefs registerInteger:&rotation forKey:@"rotation"];
+    [prefs registerInteger:&textSize forKey:@"textSize"];
+    [prefs registerBool:&hideTime forKey:@"hideTime"];
+    [prefs registerBool:&hideDate forKey:@"hideDate"];
+    [prefs registerBool:&hypShow forKey:@"hypShow"];
+    [prefs registerBool:&blockAFont forKey:@"blockAFont"];
+
+
+
+
+
+
+    /*
     NSDictionary *prefs = [[NSUserDefaults standardUserDefaults] persistentDomainForName:@"com.samgisaninja.mcsplashprefs"];
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
     BOOL firstLoad = FALSE;
@@ -305,10 +329,14 @@ NSTimer *delayShrinkTimer;
                 [mutablePrefs setObject:[NSNumber numberWithInt:-20] forKey:@"rotation"];
                 [defaults setPersistentDomain:mutablePrefs forName:@"com.samgisaninja.mcsplashprefs"];
             }
-            
+        }
+        if (![[prefs allKeys] containsObject:@"textSize"]){
+            [mutablePrefs setObject:@(11) forKey:@"textSize"];
+            [defaults setPersistentDomain:mutablePrefs forName:@"com.samgisaninja.mcsplashprefs"];
         }
     }
     if ([[prefs objectForKey:@"isEnabled"] boolValue] || firstLoad) {
         %init;
     }
+    */
 }
