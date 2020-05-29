@@ -428,7 +428,7 @@ BOOL blockAFont;
     [prefs registerInteger:&splashSide default:1 forKey:@"splashSide"];
     [prefs registerInteger:&xOff default:0 forKey:@"xOff"];
     [prefs registerInteger:&yOff default:0 forKey:@"yOff"];
-    [prefs registerInteger:&rotation default:0 forKey:@"rotation"];
+    [prefs registerInteger:&rotation default:45 forKey:@"rotation"];
     [prefs registerInteger:&textSize default:11 forKey:@"textSize"];
     [prefs registerBool:&hideTime default:FALSE forKey:@"hideTime"];
     [prefs registerBool:&hideDate default:FALSE forKey:@"hideDate"];
